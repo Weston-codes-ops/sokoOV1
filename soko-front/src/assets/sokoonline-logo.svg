@@ -1,0 +1,22 @@
+<svg viewBox="0 0 240 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Central marketplace hub -->
+  <circle cx="24" cy="24" r="8" stroke="#059669" stroke-width="2.5" fill="none" />
+  <circle cx="24" cy="24" r="4" fill="#F59E0B" />
+  
+  <!-- Connected community nodes -->
+  <circle cx="12" cy="12" r="5" stroke="#F59E0B" stroke-width="2" fill="white" />
+  <circle cx="36" cy="12" r="5" stroke="#059669" stroke-width="2" fill="white" />
+  <circle cx="12" cy="36" r="5" stroke="#059669" stroke-width="2" fill="white" />
+  <circle cx="36" cy="36" r="5" stroke="#F59E0B" stroke-width="2" fill="white" />
+  
+  <!-- Connection lines -->
+  <path d="M15 15L19 19" stroke="#059669" stroke-width="1.5" opacity="0.4" />
+  <path d="M33 15L29 19" stroke="#F59E0B" stroke-width="1.5" opacity="0.4" />
+  <path d="M15 33L19 29" stroke="#F59E0B" stroke-width="1.5" opacity="0.4" />
+  <path d="M33 33L29 29" stroke="#059669" stroke-width="1.5" opacity="0.4" />
+  
+  <!-- SokoOnline text -->
+  <text x="60" y="32" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="500" letter-spacing="-0.02em">
+    <tspan fill="#059669">Soko</tspan><tspan fill="#F59E0B">Online</tspan>
+  </text>
+</svg>

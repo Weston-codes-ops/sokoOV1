@@ -1,0 +1,71 @@
+/* ── Google Font ─────────────────────────────────────────────────
+ * DM Sans is clean, modern and highly readable at small sizes.
+ * Perfect for an ecommerce UI.
+ */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap');
+
+/*
+ * index.css — Global styles for SokoOnline
+ *
+ * We import Tailwind's base styles, components, and utilities.
+ * This single import replaces the old @tailwind directives when
+ * using the @tailwindcss/vite plugin (Tailwind v4).
+ *
+ * We also define our brand color palette as CSS variables so
+ * we can reference them anywhere in the app consistently.
+ */
+@import "tailwindcss";
+
+
+/* ── Brand Color Palette ─────────────────────────────────────────
+ * These CSS variables define SokoOnline's identity.
+ * --green       : primary brand color, used for buttons, links, accents
+ * --green-light : hover state for green elements
+ * --green-pale  : light green background for badges, tags, highlights
+ * --amber       : secondary accent, used for CTAs and highlights
+ * --amber-hover : darker amber for hover states
+ *
+ * Neutrals are used for text, borders and backgrounds.
+ */
+:root {
+  --green:        #0f4c35;
+  --green-light:  #1a6b4a;
+  --green-pale:   #e8f5ee;
+  --amber:        #f59e0b;
+  --amber-hover:  #d97706;
+
+  --white:        #ffffff;
+  --off-white:    #f9fafb;
+  --border:       #e5e7eb;
+  --text:         #111827;
+  --text-muted:   #6b7280;
+  --text-faint:   #9ca3af;
+}
+
+/* ── Base Styles ─────────────────────────────────────────────────
+ * Apply the brand font and text color globally.
+ * box-sizing: border-box ensures padding doesn't break layouts.
+ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  background: var(--white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Custom Scrollbar ────────────────────────────────────────────
+ * Subtle scrollbar that matches the brand aesthetic.
+ */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }

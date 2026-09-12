@@ -1,0 +1,28 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+
+# Java / Maven
+sokoonline/target/
+
+# Node / Vite
+soko-front/node_modules/
+soko-front/dist/
+soko-front/.vite/
+
+# IDE and OS files
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.iml
+.DS_Store
+Thumbs.db
+
+# Logs and local Docker data
+*.log
+docker-data/
