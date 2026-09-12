@@ -24,5 +24,3 @@ Start PostgreSQL, set `SPRING_DATASOURCE_PASSWORD`, then run `sokoonline\\mvnw.c
 - `sokoonline`: Spring Boot API
 - `docker-compose.yml`: local frontend, backend, and PostgreSQL stack
 - `DEPLOYMENT.md`: GitHub safety, hosting options, and deployment variables
-
-Never commit `.env`, database credentials, JWT secrets, certificates, or cloud credentials. Configure production values in the hosting provider's secret/environment settings.
