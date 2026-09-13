@@ -151,18 +151,23 @@ function LoginForm({ login, onClose }) {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading]           = useState(false)
   const [error, setError]               = useState('')
+  const [success, setSuccess]           = useState('')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setSuccess('')
     try {
       const res = await api.post('/auth/login', form)
       const { accessToken, email, role, userId, fullName } = res.data
       login({ id: userId, email, role, name: fullName || email }, accessToken)
-      onClose()
-      if (role === 'ADMIN') navigate('/hidden-admin/products')
-      else navigate('/store')
+      setSuccess('Signed in successfully. Opening your space...')
+      window.setTimeout(() => {
+        onClose()
+        if (role === 'ADMIN') navigate('/_market-ops/catalog')
+        else navigate('/store')
+      }, 900)
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid email or password.')
     } finally {
@@ -175,6 +180,11 @@ function LoginForm({ login, onClose }) {
       {error && (
         <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-xs text-red-600">
           {error}
+        </div>
+      )}
+      {success && (
+        <div className="p-3 bg-green-50 border border-green-100 rounded-lg text-xs text-[#0f4c35]">
+          {success}
         </div>
       )}
       <div>

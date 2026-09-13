@@ -15,11 +15,13 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading]           = useState(false)
   const [error, setError]               = useState('')
+  const [success, setSuccess]           = useState('')
   const successMessage = location.state?.message
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
     setError('')
+    setSuccess('')
   }
 
   const handleSubmit = async (e) => {
@@ -31,10 +33,11 @@ export default function LoginPage() {
       const { accessToken, email, role, userId, fullName } = res.data
       const user = { id: userId, email, role, name: fullName || email }
       login(user, accessToken)
+      setSuccess('Signed in successfully. Preparing your space...')
       if (role === 'ADMIN') {
-        navigate('/hidden-admin/dashboard')
+        window.setTimeout(() => navigate('/_market-ops/catalog'), 900)
       } else {
-        navigate('/store')
+        window.setTimeout(() => navigate('/store'), 900)
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid email or password.')
@@ -94,6 +97,12 @@ export default function LoginPage() {
             {error && (
               <div className="mb-5 p-3 bg-red-50 border border-red-100 rounded-lg text-sm text-red-600">
                 {error}
+              </div>
+            )}
+
+            {success && (
+              <div className="mb-5 p-3 bg-green-50 border border-green-100 rounded-lg text-sm text-[#0f4c35]">
+                {success}
               </div>
             )}
 

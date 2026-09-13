@@ -31,6 +31,10 @@ import Aboutpage         from './pages/Aboutpage'
 import FAQpage           from './pages/FAQpage'
 import Loginpage         from './pages/Auth/Loginpage'
 import Registerpage      from './pages/Auth/Registerpage'
+import AdminLoginPage    from './pages/AdminLoginPage'
+import AdminRegisterPage from './pages/AdminRegisterPage'
+import AdminProductsPage from './pages/AdminProductsPage'
+import AdminLayout       from './components/AdminLayout'
 
 
 /*
@@ -75,6 +79,24 @@ function AdminRoute({ children }) {
   return children
 }
 
+function RouteTransition({ children }) {
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setLoading(false), 1500)
+    return () => window.clearTimeout(timer)
+  }, [])
+
+  return (
+    <>
+      <div aria-busy={loading} className="page-transition-content">
+        {children}
+      </div>
+      <Loading visible={loading} />
+    </>
+  )
+}
+
 /*
  * AppRoutes — Defines all routes in the app
  * Separated from App so we can use useAuth() inside
@@ -82,19 +104,11 @@ function AdminRoute({ children }) {
  */
 function AppRoutes() {
   const location = useLocation()
-  const [isLoading, setIsLoading] = useState(false)
-
-  useEffect(() => {
-    setIsLoading(true)
-    const timer = setTimeout(() => setIsLoading(false), 500)
-    return () => clearTimeout(timer)
-  }, [location.pathname])
 
   return (
-    <>
-      {isLoading && <Loading />}
-      
-      <Routes>
+    <RouteTransition key={`${location.pathname}${location.search}`}>
+      <main className="page-transition">
+        <Routes>
         {/* ── Public routes — anyone can access ─────────────────── */}
         <Route path="/"        element={<Homepage />} />
         <Route path="/store"   element={<Storepage />} />
@@ -110,9 +124,28 @@ function AppRoutes() {
           <ProtectedRoute><Cartpage /></ProtectedRoute>
         } />
     
+        {/* Quiet admin routes — only reachable on the admin host */}
+        <Route path="/_market-ops/entrance" element={
+          <AdminRoute><AdminLoginPage /></AdminRoute>
+        } />
+
+        <Route path="/_market-ops/provision" element={
+          <AdminRoute><AdminRegisterPage /></AdminRoute>
+        } />
+
+        <Route path="/_market-ops/catalog" element={
+          <AdminRoute>
+            <ProtectedRoute adminOnly>
+              <AdminLayout>
+                <AdminProductsPage />
+              </AdminLayout>
+            </ProtectedRoute>
+          </AdminRoute>
+        } />
+
    {/*
-  ── Hidden admin routes — only reachable on the admin host ─────
-  <Route path="/hidden-admin/dashboard" element={
+  ── Reserved admin routes — only reachable on the admin host ────
+  <Route path="/_market-ops/dashboard" element={
     <AdminRoute>
       <ProtectedRoute adminOnly>
         <AdminLayout>
@@ -122,7 +155,7 @@ function AppRoutes() {
     </AdminRoute>
   } />
 
-  <Route path="/hidden-admin/products" element={
+  <Route path="/_market-ops/products" element={
     <AdminRoute>
       <ProtectedRoute adminOnly>
         <AdminLayout>
@@ -132,7 +165,7 @@ function AppRoutes() {
     </AdminRoute>
   } />
 
-  <Route path="/hidden-admin/categories" element={
+  <Route path="/_market-ops/categories" element={
     <AdminRoute>
       <ProtectedRoute adminOnly>
         <AdminLayout>
@@ -142,7 +175,7 @@ function AppRoutes() {
     </AdminRoute>
   } />
 
-  <Route path="/hidden-admin/orders" element={
+  <Route path="/_market-ops/orders" element={
     <AdminRoute>
       <ProtectedRoute adminOnly>
         <AdminLayout>
@@ -152,7 +185,7 @@ function AppRoutes() {
     </AdminRoute>
   } />
 
-  <Route path="/hidden-admin/promotions" element={
+  <Route path="/_market-ops/promotions" element={
     <AdminRoute>
       <ProtectedRoute adminOnly>
         <AdminLayout>
@@ -166,9 +199,9 @@ function AppRoutes() {
 
         {/* ── Catch-all — redirect unknown URLs to home ─────────── */}
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-
-    </>
+        </Routes>
+      </main>
+    </RouteTransition>
   )
 }
 

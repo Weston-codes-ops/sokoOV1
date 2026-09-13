@@ -89,7 +89,7 @@ export default function ProductsPage() {
   const gridClasses = 'grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5'
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f7faf6]">
+    <div className="min-h-screen flex flex-col bg-[#f4f8f4]">
       <Navbar />
 
       <div className="flex flex-1 overflow-hidden min-h-0">
@@ -102,7 +102,7 @@ export default function ProductsPage() {
 
           <div className={`
             ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-            fixed left-0 top-0 bottom-0 z-50 w-72 bg-[#f4fbf5] border-r border-gray-200 shadow-2xl lg:sticky lg:top-0 lg:h-screen lg:max-h-screen lg:static lg:translate-x-0 lg:shadow-none lg:w-64 lg:bg-transparent lg:border-none
+            fixed left-0 top-0 bottom-0 z-50 w-72 bg-[#f4fbf5] border-r border-gray-200 shadow-2xl lg:top-0 lg:h-screen lg:max-h-screen lg:static lg:translate-x-0 lg:shadow-none lg:w-64 lg:bg-transparent lg:border-none
             flex flex-col overflow-y-auto lg:overflow-y-hidden transition-transform duration-300 ease-out
           `}>
 
@@ -209,14 +209,14 @@ export default function ProductsPage() {
 
         {/* ══ MAIN CONTENT ═══════════════════════════════════════════ */}
         <div className="flex-1 min-w-0 overflow-y-auto">
-          <div className="px-4 pt-6 pb-10 sm:px-6 lg:px-8">
+          <div className="mx-auto w-full max-w-[1800px] px-4 pt-8 pb-12 sm:px-6 lg:px-10">
 
             {/* Top bar — search + mobile filter + count */}
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between mb-6">
+            <div className="mb-8 flex flex-col gap-5 rounded-3xl border border-[#dce9df] bg-white/80 p-5 shadow-sm sm:p-7 lg:flex-row lg:items-end lg:justify-between">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
-                  <h1 className="text-2xl font-bold text-slate-950">Store</h1>
-                  <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#e8f5ee] text-[#0f4c35]">Shop Easily</span>
+                  <h1 className="text-3xl font-black tracking-tight text-slate-950">Store</h1>
+                  <span className="rounded-full bg-[#e8f5ee] px-2.5 py-1 text-xs font-bold text-[#0f4c35]">Fresh picks</span>
                 </div>
                 <p className="text-sm text-slate-500 max-w-2xl">Discover fresh arrivals, curated collections, and everyday essentials — all in one clean shopping experience.</p>
               </div>
@@ -232,7 +232,7 @@ export default function ProductsPage() {
                   <input
                     type="text" placeholder="Search products..."
                     value={search} onChange={e => { setSearch(e.target.value); setPage(0) }}
-                    className="w-full pl-10 pr-10 py-3 bg-white border border-gray-200 rounded-2xl text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0f4c35] focus:border-transparent"
+                    className="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-10 pr-10 text-sm shadow-sm outline-none transition focus:border-[#0f4c35] focus:ring-2 focus:ring-[#0f4c35]/15"
                   />
                   {search && (
                     <button onClick={() => setSearch('')}
@@ -249,7 +249,7 @@ export default function ProductsPage() {
               <div className={gridClasses}>
                 {[...Array(12)].map((_, i) => (
                   <div key={i} className="bg-white rounded-3xl animate-pulse border border-gray-100 overflow-hidden">
-                    <div className="aspect-[4/3] bg-gray-100" />
+                    <div className="aspect-4\/3 bg-gray-100" />
                     <div className="p-4 space-y-3">
                       <div className="h-3 bg-gray-100 rounded-full w-3/4" />
                       <div className="h-4 bg-gray-100 rounded-full w-full" />
@@ -298,8 +298,8 @@ export default function ProductsPage() {
 function ProductCard({ product }) {
   return (
     <Link to={`/products/${product.slug}`}
-      className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:border-[#0f4c35]/30 hover:shadow-lg transition duration-300 ease-out group flex flex-col">
-      <div className="aspect-[4/3] bg-gray-50 overflow-hidden relative">
+      className="group flex flex-col overflow-hidden rounded-2xl border border-[#e1e9e3] bg-white shadow-sm transition duration-300 ease-out hover:-translate-y-1 hover:border-[#0f4c35]/30 hover:shadow-xl">
+      <div className="relative aspect-4\/3 overflow-hidden bg-[#edf4ee]">
         {product.imageURL
           ? <img src={product.imageURL} alt={product.name}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -313,7 +313,7 @@ function ProductCard({ product }) {
           </div>
         )}
       </div>
-      <div className="p-4 flex flex-col flex-1 gap-3">
+      <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex items-center justify-between gap-2">
           <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#eaf8ef] text-[11px] font-semibold uppercase tracking-[0.15em] text-[#0f4c35]">
             {product.subcategories?.[0] || product.categories?.[0] || 'General'}

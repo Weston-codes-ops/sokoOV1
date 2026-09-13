@@ -1,6 +1,6 @@
 package com.westoncodeops.sokoonline.security.jwt;
 
-import com.westoncodeops.sokoonline.entities.User;
+import com.westoncodeops.sokoonline.security.AccountPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -44,9 +44,9 @@ public class JwtService {
 
     public String generateAccessToken(UserDetails userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
-        if (userDetails instanceof User user) {
-            extraClaims.put("role", user.getRole().name());
-            extraClaims.put("userId", user.getId().toString());
+        if (userDetails instanceof AccountPrincipal account) {
+            extraClaims.put("role", account.getRole().name());
+            extraClaims.put("userId", account.getId().toString());
         }
         return buildToken(extraClaims, userDetails.getUsername(), accessTokenExpiration);
     }

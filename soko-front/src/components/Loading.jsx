@@ -1,11 +1,15 @@
-export default function Loading() {
+export default function Loading({ visible = true }) {
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white gap-4">
-      <h1 className="text-xl font-semibold text-gray-800">Loading</h1>
-      <div className="flex items-center gap-2">
-        <div className="w-4 h-4 rounded-full bg-[#0f4c35] animate-bounce" style={{ animationDelay: "0ms" }} />
-        <div className="w-4 h-4 rounded-full bg-[#0f4c35] animate-bounce" style={{ animationDelay: "150ms" }} />
-        <div className="w-4 h-4 rounded-full bg-[#0f4c35] animate-bounce" style={{ animationDelay: "300ms" }} />
+    <div
+      aria-hidden={!visible}
+      className={`route-loader ${visible ? 'route-loader-visible' : 'route-loader-hidden'}`}
+    >
+      <div className="route-loader-panel">
+        <div className="flex items-center gap-2" aria-label="Loading page">
+          <div className="route-loader-dot" style={{ animationDelay: '0ms' }} />
+          <div className="route-loader-dot" style={{ animationDelay: '120ms' }} />
+          <div className="route-loader-dot" style={{ animationDelay: '240ms' }} />
+        </div>
       </div>
     </div>
   )

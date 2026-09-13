@@ -1,31 +1,36 @@
 package com.westoncodeops.sokoonline.entities;
 
-
 import com.westoncodeops.sokoonline.enums.Role;
-import jakarta.persistence.*;
+import com.westoncodeops.sokoonline.security.AccountPrincipal;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import com.westoncodeops.sokoonline.security.AccountPrincipal;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-@Table(name = "\"user\"")
 @Entity
+@Table(name = "admins")
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class User implements AccountPrincipal {
-
+@AllArgsConstructor
+public class Admin implements AccountPrincipal {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -36,12 +41,13 @@ public class User implements AccountPrincipal {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    @Builder.Default
+    private Role role = Role.ADMIN;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -51,7 +57,7 @@ public class User implements AccountPrincipal {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority(Role.ADMIN.name()));
     }
 
     @Override
@@ -59,23 +65,8 @@ public class User implements AccountPrincipal {
         return email;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+    @Override public boolean isAccountNonExpired() { return true; }
+    @Override public boolean isAccountNonLocked() { return true; }
+    @Override public boolean isCredentialsNonExpired() { return true; }
+    @Override public boolean isEnabled() { return true; }
 }

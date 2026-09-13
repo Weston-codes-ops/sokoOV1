@@ -12,4 +12,5 @@ public interface UserService {
     AuthResponse register(RegisterRequest registerRequest);
     AuthResponse login(LoginRequest loginRequest);
     void deleteUser(UUID id);
+
 }

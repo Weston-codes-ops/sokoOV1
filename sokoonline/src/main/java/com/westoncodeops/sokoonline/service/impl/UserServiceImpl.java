@@ -27,19 +27,13 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -70,12 +64,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         cartRepository.save(cart);
 
         String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = refreshTokenService.issueRefreshToken(user.getId());
+        String refreshToken = refreshTokenService.issueRefreshToken(user);
         return toAuthResponse(user, "Registration successful", accessToken, refreshToken);
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.email().trim().toLowerCase())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
@@ -85,7 +79,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = refreshTokenService.issueRefreshToken(user.getId());
+        String refreshToken = refreshTokenService.issueRefreshToken(user);
         return toAuthResponse(user, "Login successful", accessToken, refreshToken);
     }
 

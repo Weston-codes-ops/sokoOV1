@@ -13,10 +13,12 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading]           = useState(false)
   const [error, setError]               = useState('')
+  const [success, setSuccess]           = useState('')
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
     setError('')
+    setSuccess('')
   }
 
   const handleSubmit = async (e) => {
@@ -40,9 +42,10 @@ export default function RegisterPage() {
         password: form.password,
       })
       if (!res.data) throw new Error('Registration did not return a response.')
-      navigate('/login', {
+      setSuccess('Account created successfully. Taking you to sign in...')
+      window.setTimeout(() => navigate('/login', {
         state: { message: 'Account created successfully. Please sign in.' },
-      })
+      }), 1200)
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.')
     } finally {
@@ -97,6 +100,12 @@ export default function RegisterPage() {
             {error && (
               <div className="mb-5 p-3 bg-red-50 border border-red-100 rounded-lg text-sm text-red-600">
                 {error}
+              </div>
+            )}
+
+            {success && (
+              <div className="mb-5 p-3 bg-green-50 border border-green-100 rounded-lg text-sm text-[#0f4c35]">
+                {success}
               </div>
             )}
 

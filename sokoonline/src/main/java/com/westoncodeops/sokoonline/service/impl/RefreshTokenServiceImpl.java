@@ -4,11 +4,15 @@ import com.westoncodeops.sokoonline.dto.requests.RefreshRequest;
 import com.westoncodeops.sokoonline.dto.responses.AuthResponse;
 import com.westoncodeops.sokoonline.entities.Auth.RefreshToken;
 import com.westoncodeops.sokoonline.entities.User;
+import com.westoncodeops.sokoonline.entities.Admin;
+import com.westoncodeops.sokoonline.enums.AccountType;
 import com.westoncodeops.sokoonline.enums.Role;
 import com.westoncodeops.sokoonline.exceptions.InvalidRefreshTokenException;
 import com.westoncodeops.sokoonline.exceptions.ResourceNotFoundException;
 import com.westoncodeops.sokoonline.repositories.RefreshTokenRepository;
 import com.westoncodeops.sokoonline.repositories.UserRepository;
+import com.westoncodeops.sokoonline.repositories.AdminRepository;
+import com.westoncodeops.sokoonline.security.AccountPrincipal;
 import com.westoncodeops.sokoonline.security.jwt.JwtService;
 import com.westoncodeops.sokoonline.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +34,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
+    private final AdminRepository adminRepository;
     private final JwtService jwtService;
 
     @Value("${jwt.refresh-token-expiration-ms}")
@@ -37,16 +42,14 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     @Transactional
-    public String issueRefreshToken(UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
-
+    public String issueRefreshToken(AccountPrincipal account) {
         String rawToken = UUID.randomUUID().toString() + "-" + System.nanoTime();
         String tokenHash = sha256Hex(rawToken);
         Instant now = Instant.now();
         RefreshToken rt = RefreshToken.builder()
                 .tokenHash(tokenHash)
-                .user(user)
+                .ownerId(account.getId())
+                .ownerType(account instanceof Admin ? AccountType.ADMIN : AccountType.USER)
                 .issuedAt(now)
                 .expiresAt(now.plusMillis(refreshTokenExpirationMs))
                 .revokedAt(null)
@@ -61,7 +64,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         String incomingToken = request.refreshToken();
         String hash = sha256Hex(incomingToken);
 
-        RefreshToken stored = refreshTokenRepository.findActiveByHashWithUser(hash)
+        RefreshToken stored = refreshTokenRepository.findByTokenHashAndRevokedAtIsNull(hash)
                 .orElseThrow(() -> new InvalidRefreshTokenException("Refresh token is invalid or revoked"));
 
         if (stored.getExpiresAt().isBefore(Instant.now())) {
@@ -70,22 +73,19 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             throw new InvalidRefreshTokenException("Refresh token is expired");
         }
 
-        User user = stored.getUser();
-        if (user == null) {
-            throw new InvalidRefreshTokenException("Refresh token is invalid");
-        }
+        AccountPrincipal account = findAccount(stored);
 
         stored.setRevokedAt(Instant.now());
         refreshTokenRepository.save(stored);
 
-        String newAccessToken = jwtService.generateAccessToken(user);
-        String newRefreshToken = issueRefreshToken(user.getId());
+        String newAccessToken = jwtService.generateAccessToken(account);
+        String newRefreshToken = issueRefreshToken(account);
 
-        String fullName = user.getFirstName() + " " + user.getLastName();
-        Role role = user.getRole();
+        String fullName = fullName(account);
+        Role role = account.getRole();
         return new AuthResponse(
-                user.getId(),
-                user.getEmail(),
+            account.getId(),
+            account.getUsername(),
                 fullName,
                 role,
                 "Token refreshed",
@@ -101,8 +101,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             return;
         }
         String hash = sha256Hex(token);
-        RefreshToken rt = refreshTokenRepository.findActiveByHashWithUser(hash).orElse(null);
-        if (rt != null && rt.getUser() != null && rt.getUser().getId().equals(userId)) {
+        RefreshToken rt = refreshTokenRepository.findByTokenHashAndRevokedAtIsNull(hash).orElse(null);
+        if (rt != null && rt.getOwnerId().equals(userId)) {
             rt.setRevokedAt(Instant.now());
             refreshTokenRepository.save(rt);
         }
@@ -111,12 +111,32 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional
     public void revokeAllRefreshTokensForUser(UUID userId) {
-        List<RefreshToken> active = refreshTokenRepository.findAllActiveByUserId(userId);
+        List<RefreshToken> active = refreshTokenRepository.findAllByOwnerIdAndOwnerTypeAndRevokedAtIsNull(
+            userId, AccountType.USER);
+        active.addAll(refreshTokenRepository.findAllByOwnerIdAndOwnerTypeAndRevokedAtIsNull(
+            userId, AccountType.ADMIN));
         Instant now = Instant.now();
         for (RefreshToken rt : active) {
             rt.setRevokedAt(now);
         }
         refreshTokenRepository.saveAll(active);
+    }
+
+    private AccountPrincipal findAccount(RefreshToken token) {
+        if (token.getOwnerType() == AccountType.ADMIN) {
+            return adminRepository.findById(token.getOwnerId())
+                    .orElseThrow(() -> new InvalidRefreshTokenException("Refresh token is invalid"));
+        }
+        return userRepository.findById(token.getOwnerId())
+                .orElseThrow(() -> new InvalidRefreshTokenException("Refresh token is invalid"));
+    }
+
+    private static String fullName(AccountPrincipal account) {
+        if (account instanceof User user) {
+            return user.getFirstName() + " " + user.getLastName();
+        }
+        Admin admin = (Admin) account;
+        return admin.getFirstName() + " " + admin.getLastName();
     }
 
     private static String sha256Hex(String input) {

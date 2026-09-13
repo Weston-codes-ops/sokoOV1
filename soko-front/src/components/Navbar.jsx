@@ -4,6 +4,14 @@ import { ShoppingCart, User, LogOut, Search, X, Menu } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import logo from '../assets/sokoonline-logo.svg'
 
+function Logo() {
+  return (
+    <Link to="/" className="shrink-0">
+      <img src={logo} alt="SokoOnline" className="h-8 w-auto" />
+    </Link>
+  )
+}
+
 export default function Navbar({ variant = 'default' }) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
@@ -11,7 +19,6 @@ export default function Navbar({ variant = 'default' }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
 
-  const isAdmin  = user?.role === 'ADMIN'
   const isActive = (path) => location.pathname === path
 
   const handleLogout = () => {
@@ -29,13 +36,6 @@ export default function Navbar({ variant = 'default' }) {
     }
   }
 
-  /* ── LOGO ────────────────────────────────────────────────────── */
-  const Logo = () => (
-    <Link to="/" className="shrink-0">
-      <img src={logo} alt="SokoOnline" className="h-8 w-auto" />
-    </Link>
-  )
-
   /* ── AUTH VARIANT ────────────────────────────────────────────── */
   if (variant === 'auth') return (
     <nav className="bg-white border-b border-gray-100">
@@ -49,11 +49,11 @@ export default function Navbar({ variant = 'default' }) {
   if (variant === 'minimal') return (
     <>
       <nav className="bg-white border-b border-gray-100">
-        <div className="w-full px-6 h-14 flex items-center gap-8">
+        <div className="w-full px-6 h-14 grid grid-cols-[1fr_auto_1fr] items-center gap-6">
           <Logo />
 
           {/* Nav links */}
-          <div className="hidden md:flex items-center justify-center gap-6 flex-1">
+          <div className="hidden md:flex items-center justify-center gap-6">
             <NavLink to="/store"  label="Store"     active={isActive('/store')} />
             <NavLink to="/about"  label="About"     active={isActive('/about')} />
             <NavLink to="/faqs"   label="FAQs"      active={isActive('/faqs')} />
@@ -61,7 +61,7 @@ export default function Navbar({ variant = 'default' }) {
           </div>
 
           {/* Right side */}
-          <div className="flex items-center gap-3 ml-auto">
+          <div className="flex items-center justify-end gap-3">
             {user ? (
               <>
                 <Link to="/cart"
@@ -72,7 +72,7 @@ export default function Navbar({ variant = 'default' }) {
                   <div className="w-7 h-7 bg-[#e8f5ee] rounded-full flex items-center justify-center shrink-0">
                     <User size={13} className="text-[#0f4c35]" />
                   </div>
-                  <span className="text-xs font-medium text-gray-700 max-w-[100px] truncate hidden sm:block">
+                  <span className="text-xs font-medium text-gray-700 max-w-25 truncate hidden sm:block">
                     {user.name || user.email}
                   </span>
                   <button onClick={handleLogout} title="Sign out"
@@ -83,12 +83,10 @@ export default function Navbar({ variant = 'default' }) {
               </>
             ) : (
               <>
-                <Link to="/login"
-                  className="text-sm font-medium text-gray-600 hover:text-[#0f4c35] transition-colors px-3 py-1.5">
+                <Link to="/login" className="nav-link">
                   Sign in
                 </Link>
-                <Link to="/register"
-                  className="text-sm font-semibold bg-[#0f4c35] hover:bg-[#1a6b4a] text-white px-4 py-1.5 rounded-lg transition-colors">
+                <Link to="/register" className="nav-cta">
                   Get started
                 </Link>
               </>
@@ -104,13 +102,13 @@ export default function Navbar({ variant = 'default' }) {
     <>
       <nav className="bg-white border-b border-gray-100 sticky top-0 z-40">
         <div className="w-full px-6">
-          <div className="flex items-center h-14 gap-8">
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center h-14 gap-6">
 
             {/* Logo */}
             <Logo />
 
             {/* Nav links — desktop */}
-            <div className="hidden md:flex items-center gap-6 flex-1">
+            <div className="hidden md:flex items-center justify-center gap-6">
               <NavLink to="/store"  label="Store"  active={isActive('/store')} />
               <NavLink to="/about"  label="About"  active={isActive('/about')} />
               <NavLink to="/faqs"   label="FAQs"   active={isActive('/faqs')} />
@@ -119,22 +117,10 @@ export default function Navbar({ variant = 'default' }) {
             </div>
 
             {/* Right side */}
-            <div className="flex items-center gap-2 ml-auto">
+            <div className="flex items-center justify-end gap-2">
 
               {user ? (
                 <>
-                  {isAdmin && (
-                    <Link to="/hidden-admin/products"
-                      className="text-sm font-semibold text-[#0f4c35] hover:text-[#1a6b4a] transition-colors px-3 py-1.5 rounded-lg hover:bg-[#e8f5ee]">
-                      Admin
-                    </Link>
-                  )}
-                  {isAdmin && (
-                    <Link to="/hidden-admin/products"
-                      className="text-sm font-semibold text-[#0f4c35] hover:text-[#1a6b4a] transition-colors px-3 py-1.5 rounded-lg hover:bg-[#e8f5ee]">
-                      Admin
-                    </Link>
-                  )}
                   <Link to="/cart"
                     className="p-2 text-gray-500 hover:text-[#0f4c35] hover:bg-[#e8f5ee] rounded-lg transition-colors">
                     <ShoppingCart size={18} />
@@ -143,7 +129,7 @@ export default function Navbar({ variant = 'default' }) {
                     <div className="w-7 h-7 bg-[#e8f5ee] rounded-full flex items-center justify-center shrink-0">
                       <User size={13} className="text-[#0f4c35]" />
                     </div>
-                    <span className="text-xs font-medium text-gray-700 max-w-[90px] truncate hidden lg:block">
+                    <span className="text-xs font-medium text-gray-700 max-w-22.5 truncate hidden lg:block">
                       {user.name || user.email}
                     </span>
                     <button onClick={handleLogout} title="Sign out"
@@ -154,12 +140,10 @@ export default function Navbar({ variant = 'default' }) {
                 </>
               ) : (
                 <div className="flex items-center gap-2">
-                  <Link to="/login"
-                    className="text-sm font-medium text-gray-600 hover:text-[#0f4c35] px-3 py-1.5 transition-colors">
+                  <Link to="/login" className="nav-link">
                     Sign in
                   </Link>
-                  <Link to="/register"
-                    className="text-sm font-semibold bg-[#0f4c35] hover:bg-[#1a6b4a] text-white px-4 py-1.5 rounded-lg transition-colors">
+                  <Link to="/register" className="nav-cta">
                     Get started
                   </Link>
                 </div>
@@ -225,10 +209,10 @@ export default function Navbar({ variant = 'default' }) {
 function NavLink({ to, label, active }) {
   return (
     <Link to={to}
-      className={`text-sm transition-colors font-medium ${
+      className={`nav-link ${
         active
-          ? 'text-[#0f4c35] font-semibold'
-          : 'text-gray-500 hover:text-gray-900'
+          ? 'nav-link-active'
+          : ''
       }`}>
       {label}
     </Link>

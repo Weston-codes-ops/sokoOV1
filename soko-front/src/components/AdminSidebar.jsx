@@ -1,13 +1,9 @@
 import { Link, useLocation } from 'react-router-dom'
-import { ShoppingBag, Grid, Package, Percent, LogOut, Home } from 'lucide-react'
+import { ShoppingBag, LogOut } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 const navigationItems = [
-  { label: 'Dashboard', to: '/hidden-admin/dashboard', icon: Home },
-  { label: 'Products', to: '/hidden-admin/products', icon: ShoppingBag },
-  { label: 'Categories', to: '/hidden-admin/categories', icon: Grid },
-  { label: 'Orders', to: '/hidden-admin/orders', icon: Package },
-  { label: 'Promotions', to: '/hidden-admin/promotions', icon: Percent },
+  { label: 'Products', to: '/_market-ops/catalog', icon: ShoppingBag },
 ]
 
 export default function AdminSidebar() {
