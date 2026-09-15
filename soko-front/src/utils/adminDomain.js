@@ -14,6 +14,10 @@ export function isAdminSubdomain(hostname = window.location.hostname) {
     return host === configuredHost || host === `www.${configuredHost}`
   }
 
+  // Without a separate admin domain, keep admin routes on the current host.
+  // ProtectedRoute still requires ADMIN credentials for the catalog.
+  if (!import.meta.env.VITE_ADMIN_SUBDOMAIN) return true
+
   const adminSubdomain = import.meta.env.VITE_ADMIN_SUBDOMAIN || DEFAULT_ADMIN_SUBDOMAIN
   return host === adminSubdomain || host.startsWith(`${adminSubdomain}.`) || host.startsWith('admin.')
 }
