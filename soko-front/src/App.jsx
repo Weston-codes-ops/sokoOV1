@@ -48,7 +48,7 @@ import AdminLayout       from './components/AdminLayout'
  *   <ProtectedRoute><CartPage /></ProtectedRoute>
  *   <ProtectedRoute adminOnly><AdminProductsPage /></ProtectedRoute>
  */
-function ProtectedRoute({ children, adminOnly = false }) {
+function ProtectedRoute({ children, adminOnly = false, customerOnly = false }) {
   const { isLoggedIn, user } = useAuth()
 
   // Not logged in → redirect to login page
@@ -56,6 +56,9 @@ function ProtectedRoute({ children, adminOnly = false }) {
 
   // Logged in but not admin → redirect to home
   if (adminOnly && user?.role !== 'ADMIN') return <Navigate to="/" replace />
+
+  // Admins operate the shop and do not have customer profiles or carts.
+  if (customerOnly && user?.role !== 'USER') return <Navigate to="/" replace />
 
   return children
 }
@@ -114,14 +117,13 @@ function AppRoutes() {
         <Route path="/store"   element={<Storepage />} />
         <Route path="/login"   element={<Loginpage />} />
         <Route path="/register" element={<Registerpage />} />
-        <Route path="/cart"    element={<Cartpage />} />
         <Route path="/about"   element={<Aboutpage />} />
         <Route path="/faqs"    element={<FAQpage />} />
         
 
         {/* ── Protected routes — must be logged in ──────────────── */}
         <Route path="/cart" element={
-          <ProtectedRoute><Cartpage /></ProtectedRoute>
+          <ProtectedRoute customerOnly><Cartpage /></ProtectedRoute>
         } />
     
         {/* Quiet admin routes — only reachable on the admin host */}

@@ -2,10 +2,8 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, KeyRound, ShieldCheck } from 'lucide-react'
 import api from '../api/axios'
-import { useAuth } from '../context/AuthContext'
 
 export default function AdminRegisterPage() {
-  const { login } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', firstName: '', lastName: '', password: '', secretKey: '' })
   const [loading, setLoading] = useState(false)
@@ -19,10 +17,9 @@ export default function AdminRegisterPage() {
     setSuccess('')
 
     try {
-      const { data } = await api.post('/admin/auth/register', form)
-      login({ id: data.userId, email: data.email, role: data.role, name: data.fullName || data.email }, data.accessToken)
-      setSuccess('Operator account created. Opening the catalog...')
-      window.setTimeout(() => navigate('/_market-ops/catalog', { replace: true }), 1200)
+      await api.post('/admin/auth/register', form)
+      setSuccess('Operator account created successfully. Please sign in to continue.')
+      window.setTimeout(() => navigate('/_market-ops/entrance', { replace: true }), 1200)
     } catch (requestError) {
       setError(requestError.response?.data?.message || 'That invitation key did not open the door.')
     } finally {

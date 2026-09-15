@@ -62,7 +62,7 @@ export default function Navbar({ variant = 'default' }) {
 
           {/* Right side */}
           <div className="flex items-center justify-end gap-3">
-            {user ? (
+            {user?.role === 'USER' ? (
               <>
                 <Link to="/cart"
                   className="p-2 text-gray-500 hover:text-[#0f4c35] hover:bg-[#e8f5ee] rounded-lg transition-colors">
@@ -119,7 +119,7 @@ export default function Navbar({ variant = 'default' }) {
             {/* Right side */}
             <div className="flex items-center justify-end gap-2">
 
-              {user ? (
+              {user?.role === 'USER' ? (
                 <>
                   <Link to="/cart"
                     className="p-2 text-gray-500 hover:text-[#0f4c35] hover:bg-[#e8f5ee] rounded-lg transition-colors">
@@ -178,7 +178,7 @@ export default function Navbar({ variant = 'default' }) {
               { to: '/store',  label: 'Store'  },
               { to: '/about',  label: 'About'  },
               { to: '/faqs',   label: 'FAQs'   },
-              ...(user ? [{ to: '/orders', label: 'Orders' }] : []),
+              ...(user?.role === 'USER' ? [{ to: '/orders', label: 'Orders' }] : []),
             ].map(item => (
               <Link key={item.to} to={item.to}
                 onClick={() => setMobileOpen(false)}
@@ -187,7 +187,7 @@ export default function Navbar({ variant = 'default' }) {
               </Link>
             ))}
             <div className="pt-2 border-t border-gray-100">
-              {user
+              {user?.role === 'USER'
                 ? <button onClick={handleLogout}
                     className="w-full text-left px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-50 rounded-lg">
                     Sign out

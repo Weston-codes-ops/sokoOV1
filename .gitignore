@@ -2,6 +2,7 @@
 .env
 .env.*
 .env.example
+sokoonline/src/main/resources/application-dev.properties
 *.pem
 *.key
 *.p12

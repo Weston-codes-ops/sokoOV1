@@ -284,7 +284,7 @@ export default function Homepage() {
                     <div className="aspect-square overflow-hidden bg-black/20">
                       {p.imageURL
                         ? <img src={p.imageURL} alt={p.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                            className="w-full h-full object-contain p-2 transition-transform duration-300" />
                         : <div className="w-full h-full flex items-center justify-center">
                             <ShoppingBag size={18} className="text-white/30" />
                           </div>

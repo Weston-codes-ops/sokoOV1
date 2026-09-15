@@ -101,7 +101,7 @@ export default function CartPage() {
                     <div className="w-16 h-16 rounded-lg bg-gray-50 overflow-hidden shrink-0">
                       {item.imageURL
                         ? <img src={item.imageURL} alt={item.productName}
-                            className="w-full h-full object-cover" />
+                            className="w-full h-full object-contain p-2" />
                         : <div className="w-full h-full flex items-center justify-center">
                             <ShoppingBag size={16} className="text-gray-200" />
                           </div>

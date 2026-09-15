@@ -55,15 +55,18 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, PRODUCTS_READ_PATHS).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
 
                         .requestMatchers(HttpMethod.POST, PRODUCTS_WRITE).hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, PRODUCTS_WRITE_ID).hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, PRODUCTS_WRITE_ID).hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, PRODUCTS_WRITE_ID).hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, CATEGORY_WRITE).hasAuthority("ADMIN")
+                        .requestMatchers("/api/v1/admin/media/**").hasAuthority("ADMIN")
 
-                        .requestMatchers(CART_PATHS).authenticated()
+                        .requestMatchers(CART_PATHS).hasAuthority("USER")
 
-                        .requestMatchers(ME_PATH).authenticated()
+                        .requestMatchers(ME_PATH).hasAuthority("USER")
                         .requestMatchers(HttpMethod.GET, USER_BY_ID_PATH).hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, USER_BY_ID_DELETE_PATH).hasAuthority("ADMIN")
 
@@ -84,6 +87,7 @@ public class SecurityConfig {
             "/api/v1/auth/refresh",
             "/api/v1/admin/auth/register",
             "/api/v1/admin/auth/login",
+                        "/api/v1/categories",
             "/actuator/health"
     };
 
@@ -96,6 +100,10 @@ public class SecurityConfig {
     };
     private static final String[] PRODUCTS_WRITE_ID = new String[]{
             "/api/v1/products/{id}"
+    };
+
+    private static final String[] CATEGORY_WRITE = new String[]{
+            "/api/v1/categories"
     };
 
     private static final String[] CART_PATHS = new String[]{

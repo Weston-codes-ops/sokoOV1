@@ -17,7 +17,7 @@ export default function ProductsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
-    setLoading(true)
+    const loadingTimer = window.setTimeout(() => setLoading(true), 0)
     const params = new URLSearchParams()
     if (search) params.append('search', search)
     params.append('page', 0)
@@ -27,31 +27,35 @@ export default function ProductsPage() {
         const list = res.data.content ?? res.data ?? []
         setProducts(list)
 
-        const derivedCategories = Array.from(
-          new Set(list.flatMap(product => product.categories ?? []))
-        ).map((name, index) => ({ id: name, name, __order: index }))
-
-        const derivedSubcategories = Array.from(
-          new Set(list.flatMap(product => product.subcategories ?? []))
-        ).map((name, index) => ({ id: name, name, categoryId: 'General', __order: index }))
-
-        setCategories(derivedCategories)
-        setSubcategories(derivedSubcategories)
+        const derivedCategories = Array.from(new Set(list.flatMap(product => product.categories ?? []))).map(name => ({ id: name, name }))
+        const derivedSubcategories = Array.from(new Set(list.flatMap(product => product.subcategories ?? []))).map(name => ({ id: name, name }))
+        setCategories(current => current.length ? current : derivedCategories)
+        setSubcategories(current => current.length ? current : derivedSubcategories)
       })
       .catch(() => {
         setProducts([])
       })
       .finally(() => setLoading(false))
+    return () => window.clearTimeout(loadingTimer)
   }, [search])
 
-  const subsForCat     = (catId) => subcategories.filter(s => s.categoryId === catId)
+  useEffect(() => {
+    api.get('/categories')
+      .then(({ data }) => {
+        setCategories((data ?? []).filter(category => !category.parentId))
+        setSubcategories((data ?? []).filter(category => category.parentId))
+      })
+      .catch(() => {})
+  }, [])
+
+  const subsForCat     = (catId) => subcategories.filter(s => (s.parentId ?? s.categoryId) === catId)
   const selectedCatObj = categories.filter(c => selectedCategories.includes(c.id))
   const selectedSubObj = subcategories.filter(s => selectedSubcategories.includes(s.id))
   const hasFilters     = search || selectedCategories.length > 0 || selectedSubcategories.length > 0
 
   const displayProducts = products
-    .filter(p => selectedCategories.length === 0 || selectedCategories.includes(p.categoryId))
-    .filter(p => selectedSubcategories.length === 0 || selectedSubcategories.includes(p.subcategoryId))
+    .filter(p => selectedCategories.length === 0 || selectedCategories.some(id => p.categories?.includes(categories.find(category => category.id === id)?.name)))
+    .filter(p => selectedSubcategories.length === 0 || selectedSubcategories.some(id => p.subcategories?.includes(subcategories.find(category => category.id === id)?.name)))
   const pageSize = 20
   const totalPages = Math.max(1, Math.ceil(displayProducts.length / pageSize))
   const pagedProducts = displayProducts.slice(page * pageSize, (page + 1) * pageSize)
@@ -70,7 +74,7 @@ export default function ProductsPage() {
       if (isSelected) {
         setSelectedSubcategories(prevSubs => prevSubs.filter(subId => {
           const sub = subcategories.find(s => s.id === subId)
-          return sub?.categoryId !== catId
+          return (sub?.parentId ?? sub?.categoryId) !== catId
         }))
       }
       return next
@@ -212,13 +216,12 @@ export default function ProductsPage() {
           <div className="mx-auto w-full max-w-[1800px] px-4 pt-8 pb-12 sm:px-6 lg:px-10">
 
             {/* Top bar — search + mobile filter + count */}
-            <div className="mb-8 flex flex-col gap-5 rounded-3xl border border-[#dce9df] bg-white/80 p-5 shadow-sm sm:p-7 lg:flex-row lg:items-end lg:justify-between">
+            <div className="mb-8 flex flex-col gap-5 border border-[#dce9df] bg-white/80 p-5 shadow-sm sm:p-7 lg:flex-row lg:items-end lg:justify-between">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
-                  <h1 className="text-3xl font-black tracking-tight text-slate-950">Store</h1>
-                  <span className="rounded-full bg-[#e8f5ee] px-2.5 py-1 text-xs font-bold text-[#0f4c35]">Fresh picks</span>
+                  <h1 className="text-md font-black tracking-tight text-slate-950">Store</h1>
                 </div>
-                <p className="text-sm text-slate-500 max-w-2xl">Discover fresh arrivals, curated collections, and everyday essentials — all in one clean shopping experience.</p>
+                <p className="text-sm text-slate-500 max-w-2xl">Explore our latest products, made for you</p>
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
@@ -232,7 +235,7 @@ export default function ProductsPage() {
                   <input
                     type="text" placeholder="Search products..."
                     value={search} onChange={e => { setSearch(e.target.value); setPage(0) }}
-                    className="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-10 pr-10 text-sm shadow-sm outline-none transition focus:border-[#0f4c35] focus:ring-2 focus:ring-[#0f4c35]/15"
+                    className="w-full border border-gray-200 bg-white py-3 pl-10 pr-10 text-sm shadow-sm outline-none transition focus:border-[#0f4c35] focus:ring-2 focus:ring-[#0f4c35]/15"
                   />
                   {search && (
                     <button onClick={() => setSearch('')}
@@ -248,7 +251,7 @@ export default function ProductsPage() {
             {loading ? (
               <div className={gridClasses}>
                 {[...Array(12)].map((_, i) => (
-                  <div key={i} className="bg-white rounded-3xl animate-pulse border border-gray-100 overflow-hidden">
+                  <div key={i} className="animate-pulse border border-gray-100 overflow-hidden">
                     <div className="aspect-4\/3 bg-gray-100" />
                     <div className="p-4 space-y-3">
                       <div className="h-3 bg-gray-100 rounded-full w-3/4" />
@@ -259,7 +262,7 @@ export default function ProductsPage() {
                 ))}
               </div>
             ) : displayProducts.length === 0 ? (
-              <div className="text-center py-20 bg-white border border-dashed border-gray-200 rounded-3xl">
+              <div className="text-center py-20 border border-dashed border-gray-200 rounded-3xl">
                 <Package size={32} className="text-gray-200 mx-auto mb-3" />
                 <p className="text-sm font-semibold text-slate-400">No products found</p>
                 <button onClick={clearFilters}
@@ -302,7 +305,7 @@ function ProductCard({ product }) {
       <div className="relative aspect-4\/3 overflow-hidden bg-[#edf4ee]">
         {product.imageURL
           ? <img src={product.imageURL} alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              className="w-full h-full object-contain p-3 transition-transform duration-300" />
           : <div className="w-full h-full flex items-center justify-center">
               <Package size={20} className="text-gray-300" />
             </div>

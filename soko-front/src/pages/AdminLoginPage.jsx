@@ -20,6 +20,9 @@ export default function AdminLoginPage() {
 
     try {
       const { data } = await api.post('/admin/auth/login', form)
+      if (data.role !== 'ADMIN') {
+        throw new Error('This account is not an administrator account.')
+      }
       login({
         id: data.userId,
         email: data.email,
