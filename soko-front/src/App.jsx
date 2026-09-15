@@ -17,11 +17,10 @@
  * If a non-admin tries to access /admin/*, they get redirected.
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { getAdminRedirectUrl, isAdminSubdomain } from './utils/adminDomain'
-import Loading from './components/Loading'
 
 // ── Page imports ──────────────────────────────────────────────────
 import Homepage          from './pages/Homepage'
@@ -83,20 +82,10 @@ function AdminRoute({ children }) {
 }
 
 function RouteTransition({ children }) {
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => setLoading(false), 1500)
-    return () => window.clearTimeout(timer)
-  }, [])
-
   return (
-    <>
-      <div aria-busy={loading} className="page-transition-content">
-        {children}
-      </div>
-      <Loading visible={loading} />
-    </>
+    <div className="page-transition-content">
+      {children}
+    </div>
   )
 }
 
