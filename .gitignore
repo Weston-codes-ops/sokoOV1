@@ -1,7 +1,7 @@
 # Environment and secrets
 .env
 .env.*
-.env.example
+!.env.example
 sokoonline/src/main/resources/application-dev.properties
 *.pem
 *.key
@@ -26,6 +26,7 @@ Thumbs.db
 
 DEPLOYMENT.md
 DEPLOYMENT-LOCAL.md
+.MD/
 
 
 

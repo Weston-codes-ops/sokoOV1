@@ -1,7 +1,7 @@
 /*
  * CartPage.jsx — Shopping Cart
  *
- * Shows all items in the current user's cart.
+ * Shows all items in the current customer's cart.
  * Protected route — must be logged in to access.
  *
  * Features:
@@ -65,7 +65,7 @@ export default function CartPage() {
   const itemCount = cart?.items?.length || 0
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f9fafb]">
+    <div className="min-h-screen flex flex-col bg-surface-subtle">
       <Navbar />
 
       <main className="flex-1">
@@ -75,7 +75,7 @@ export default function CartPage() {
 
           {loading ? (
             <div className="flex justify-center py-20">
-              <div className="w-7 h-7 border-2 border-[#0f4c35] border-t-transparent rounded-full animate-spin" />
+              <div className="w-7 h-7 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
             </div>
           ) : itemCount === 0 ? (
             // Empty cart state
@@ -84,7 +84,7 @@ export default function CartPage() {
               <p className="text-sm font-semibold text-gray-500 mb-1">Your cart is empty</p>
               <p className="text-xs text-gray-400 mb-5">Add some products to get started</p>
               <Link to="/store"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0f4c35] text-white text-sm font-semibold rounded-lg hover:bg-[#1a6b4a] transition-colors">
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-primary text-white text-sm font-semibold rounded-lg hover:bg-brand-primary-hover transition-colors">
                 Browse Store <ArrowRight size={14} />
               </Link>
             </div>
@@ -163,7 +163,7 @@ export default function CartPage() {
                     </div>
                     <div className="flex justify-between text-xs text-gray-500">
                       <span>Delivery</span>
-                      <span className="text-[#0f4c35] font-medium">
+                      <span className="text-brand-primary font-medium">
                         {total >= 2000 ? 'Free' : 'KSh 200'}
                       </span>
                     </div>
@@ -176,12 +176,12 @@ export default function CartPage() {
 
                   <button
                     onClick={() => navigate('/checkout')}
-                    className="w-full py-3 bg-[#0f4c35] hover:bg-[#1a6b4a] text-white text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2">
+                    className="w-full py-3 bg-brand-primary hover:bg-brand-primary-hover text-white text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2">
                     Proceed to Checkout <ArrowRight size={14} />
                   </button>
 
                   <Link to="/store"
-                    className="block text-center text-xs text-gray-400 hover:text-[#0f4c35] mt-3 transition-colors">
+                    className="block text-center text-xs text-gray-400 hover:text-brand-primary mt-3 transition-colors">
                     Continue shopping
                   </Link>
                 </div>

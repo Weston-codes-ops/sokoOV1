@@ -9,7 +9,7 @@
  * - Contact info
  * - Copyright bar
  *
- * The dark green background (#0a3526) is slightly darker than
+ * The dark green background uses the deepest brand green token.
  * the brand green to give the footer a grounded, solid feel.
  */
 
@@ -18,7 +18,7 @@ import { Mail, Phone, MapPin} from 'lucide-react'
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0a3526] text-white mt-auto">
+    <footer className="bg-brand-primary-dark text-white mt-auto">
       <div className="max-w-6xl mx-auto px-6">
 
         {/* ── Main Footer Grid ────────────────────────────────────── */}
@@ -27,11 +27,11 @@ export default function Footer() {
           {/* Brand column */}
           <div className="col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-7 h-7 bg-[#f59e0b] rounded-lg flex items-center justify-center">
+              <div className="w-7 h-7 bg-brand-accent rounded-lg flex items-center justify-center">
                 <span className="text-white text-xs font-extrabold">S</span>
               </div>
               <span className="text-base font-extrabold">
-                Soko<span className="text-[#f59e0b]">Online</span>
+                Soko<span className="text-brand-accent">Online</span>
               </span>
             </div>
             <p className="text-white/50 text-xs leading-relaxed mb-4 max-w-xs">
@@ -41,7 +41,7 @@ export default function Footer() {
             <div className="flex gap-2">
               {[].map((Icon, i) => (
                 <a key={i} href="#"
-                  className="w-7 h-7 bg-white/10 hover:bg-[#f59e0b] rounded-lg flex items-center justify-center transition-colors">
+                  className="w-7 h-7 bg-white/10 hover:bg-brand-accent rounded-lg flex items-center justify-center transition-colors">
                   <Icon size={13} />
                 </a>
               ))}
@@ -76,7 +76,6 @@ export default function Footer() {
                 ['FAQs',           '/faqs'],
                 ['About Us',       '/about'],
                 ['My Orders',      '/orders'],
-                ['Create Account', '/register'],
               ].map(([label, to]) => (
                 <li key={label}>
                   <Link to={to}
@@ -98,7 +97,7 @@ export default function Footer() {
                 [Mail,   'hello@sokoonline.co.ke'],
               ].map(([Icon, text]) => (
                 <li key={text} className="flex items-center gap-2 text-xs text-white/50">
-                  <Icon size={12} className="text-[#f59e0b] shrink-0" />
+                  <Icon size={12} className="text-brand-accent shrink-0" />
                   {text}
                 </li>
               ))}

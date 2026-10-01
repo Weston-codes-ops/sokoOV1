@@ -13,7 +13,7 @@ function Logo() {
 }
 
 export default function Navbar({ variant = 'default' }) {
-  const { user, logout } = useAuth()
+  const { customer, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -57,38 +57,29 @@ export default function Navbar({ variant = 'default' }) {
             <NavLink to="/store"  label="Store"     active={isActive('/store')} />
             <NavLink to="/about"  label="About"     active={isActive('/about')} />
             <NavLink to="/faqs"   label="FAQs"      active={isActive('/faqs')} />
-            {user && <NavLink to="/orders" label="Orders" active={isActive('/orders')} />}
+            {customer && <NavLink to="/orders" label="Orders" active={isActive('/orders')} />}
           </div>
 
           {/* Right side */}
           <div className="flex items-center justify-end gap-3">
-            {user?.role === 'USER' ? (
+            {customer?.role === 'USER' && (
               <>
                 <Link to="/cart"
-                  className="p-2 text-gray-500 hover:text-[#0f4c35] hover:bg-[#e8f5ee] rounded-lg transition-colors">
+                  className="p-2 text-gray-500 hover:text-brand-primary hover:bg-surface-tint rounded-lg transition-colors">
                   <ShoppingCart size={18} />
                 </Link>
                 <div className="flex items-center gap-2 pl-3 border-l border-gray-100">
-                  <div className="w-7 h-7 bg-[#e8f5ee] rounded-full flex items-center justify-center shrink-0">
-                    <User size={13} className="text-[#0f4c35]" />
+                  <div className="w-7 h-7 bg-surface-tint rounded-full flex items-center justify-center shrink-0">
+                    <User size={13} className="text-brand-primary" />
                   </div>
                   <span className="text-xs font-medium text-gray-700 max-w-25 truncate hidden sm:block">
-                    {user.name || user.email}
+                    {customer.name || customer.email}
                   </span>
                   <button onClick={handleLogout} title="Sign out"
                     className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
                     <LogOut size={14} />
                   </button>
                 </div>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className="nav-link">
-                  Sign in
-                </Link>
-                <Link to="/register" className="nav-cta">
-                  Get started
-                </Link>
               </>
             )}
           </div>
@@ -112,25 +103,25 @@ export default function Navbar({ variant = 'default' }) {
               <NavLink to="/store"  label="Store"  active={isActive('/store')} />
               <NavLink to="/about"  label="About"  active={isActive('/about')} />
               <NavLink to="/faqs"   label="FAQs"   active={isActive('/faqs')} />
-              {user && <NavLink to="/orders" label="Orders" active={isActive('/orders')} />}
+              {customer && <NavLink to="/orders" label="Orders" active={isActive('/orders')} />}
 
             </div>
 
             {/* Right side */}
             <div className="flex items-center justify-end gap-2">
 
-              {user?.role === 'USER' ? (
+              {customer?.role === 'USER' && (
                 <>
                   <Link to="/cart"
-                    className="p-2 text-gray-500 hover:text-[#0f4c35] hover:bg-[#e8f5ee] rounded-lg transition-colors">
+                    className="p-2 text-gray-500 hover:text-brand-primary hover:bg-surface-tint rounded-lg transition-colors">
                     <ShoppingCart size={18} />
                   </Link>
                   <div className="flex items-center gap-2 pl-2 border-l border-gray-100">
-                    <div className="w-7 h-7 bg-[#e8f5ee] rounded-full flex items-center justify-center shrink-0">
-                      <User size={13} className="text-[#0f4c35]" />
+                    <div className="w-7 h-7 bg-surface-tint rounded-full flex items-center justify-center shrink-0">
+                      <User size={13} className="text-brand-primary" />
                     </div>
                     <span className="text-xs font-medium text-gray-700 max-w-22.5 truncate hidden lg:block">
-                      {user.name || user.email}
+                      {customer.name || customer.email}
                     </span>
                     <button onClick={handleLogout} title="Sign out"
                       className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
@@ -138,20 +129,11 @@ export default function Navbar({ variant = 'default' }) {
                     </button>
                   </div>
                 </>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <Link to="/login" className="nav-link">
-                    Sign in
-                  </Link>
-                  <Link to="/register" className="nav-cta">
-                    Get started
-                  </Link>
-                </div>
               )}
 
               {/* Mobile menu toggle */}
               <button onClick={() => setMobileOpen(!mobileOpen)}
-                className="md:hidden p-2 text-gray-500 hover:text-[#0f4c35] rounded-lg transition-colors">
+                className="md:hidden p-2 text-gray-500 hover:text-brand-primary rounded-lg transition-colors">
                 {mobileOpen ? <X size={18} /> : <Menu size={18} />}
               </button>
             </div>
@@ -166,11 +148,11 @@ export default function Navbar({ variant = 'default' }) {
                 <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type="text" placeholder="Search products..."
                   value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-1 focus:ring-[#0f4c35]"
+                  className="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
               </div>
               <button type="submit"
-                className="px-3 py-2 bg-[#0f4c35] text-white text-xs font-semibold rounded-lg">
+                className="px-3 py-2 bg-brand-primary text-white text-xs font-semibold rounded-lg">
                 Go
               </button>
             </form>
@@ -178,24 +160,20 @@ export default function Navbar({ variant = 'default' }) {
               { to: '/store',  label: 'Store'  },
               { to: '/about',  label: 'About'  },
               { to: '/faqs',   label: 'FAQs'   },
-              ...(user?.role === 'USER' ? [{ to: '/orders', label: 'Orders' }] : []),
+              ...(customer?.role === 'USER' ? [{ to: '/orders', label: 'Orders' }] : []),
             ].map(item => (
               <Link key={item.to} to={item.to}
                 onClick={() => setMobileOpen(false)}
-                className="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-[#e8f5ee] hover:text-[#0f4c35] rounded-lg transition-colors">
+                className="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-surface-tint hover:text-brand-primary rounded-lg transition-colors">
                 {item.label}
               </Link>
             ))}
             <div className="pt-2 border-t border-gray-100">
-              {user?.role === 'USER'
-                ? <button onClick={handleLogout}
+              {customer?.role === 'USER' &&
+                <button onClick={handleLogout}
                     className="w-full text-left px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-50 rounded-lg">
                     Sign out
                   </button>
-                : <Link to="/login" onClick={() => setMobileOpen(false)}
-                    className="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-[#e8f5ee] rounded-lg">
-                    Sign in
-                  </Link>
               }
             </div>
           </div>

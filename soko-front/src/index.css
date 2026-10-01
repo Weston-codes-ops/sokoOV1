@@ -17,29 +17,55 @@
 @import "tailwindcss";
 
 
-/* ── Brand Color Palette ─────────────────────────────────────────
- * These CSS variables define SokoOnline's identity.
- * --green       : primary brand color, used for buttons, links, accents
- * --green-light : hover state for green elements
- * --green-pale  : light green background for badges, tags, highlights
- * --amber       : secondary accent, used for CTAs and highlights
- * --amber-hover : darker amber for hover states
- *
- * Neutrals are used for text, borders and backgrounds.
- */
+/* Brand palette: market green, warm amber, the logo's bright green, and clean neutrals. */
 :root {
-  --green:        #0f4c35;
-  --green-light:  #1a6b4a;
-  --green-pale:   #e8f5ee;
-  --amber:        #f59e0b;
-  --amber-hover:  #d97706;
+  --brand-primary: #0f4c35;
+  --brand-primary-hover: #1a6b4a;
+  --brand-primary-dark: #0a3526;
+  --brand-accent: #f59e0b;
+  --brand-accent-hover: #d97706;
+  --brand-accent-light: #fcd34d;
+  --brand-mint: #6ee7b7;
+  --brand-emblem: #059669;
 
-  --white:        #ffffff;
-  --off-white:    #f9fafb;
-  --border:       #e5e7eb;
-  --text:         #111827;
-  --text-muted:   #6b7280;
-  --text-faint:   #9ca3af;
+  --surface: #ffffff;
+  --surface-subtle: #f9fafb;
+  --surface-soft: #f4f8f4;
+  --surface-panel: #f8fbf7;
+  --surface-tint: #e8f5ee;
+  --border-default: #e5e7eb;
+  --border-brand: #dce9df;
+  --border-brand-soft: #e1e9e3;
+  --text-primary: #111827;
+  --text-navigation: #64748b;
+  --text-muted: #6b7280;
+  --text-faint: #9ca3af;
+  --surface-scrollbar: #f1f5f9;
+  --border-scrollbar: #cbd5e1;
+  --scrollbar-hover: #94a3b8;
+}
+
+@theme inline {
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-primary-hover: var(--brand-primary-hover);
+  --color-brand-primary-dark: var(--brand-primary-dark);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-accent-hover: var(--brand-accent-hover);
+  --color-brand-accent-light: var(--brand-accent-light);
+  --color-brand-mint: var(--brand-mint);
+  --color-brand-emblem: var(--brand-emblem);
+  --color-surface: var(--surface);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-surface-soft: var(--surface-soft);
+  --color-surface-panel: var(--surface-panel);
+  --color-surface-tint: var(--surface-tint);
+  --color-border-brand: var(--border-brand);
+  --color-border-brand-soft: var(--border-brand-soft);
+  --color-border-default: var(--border-default);
+  --color-text-primary: var(--text-primary);
+  --color-text-navigation: var(--text-navigation);
+  --color-text-muted: var(--text-muted);
+  --color-text-faint: var(--text-faint);
 }
 
 /* ── Base Styles ─────────────────────────────────────────────────
@@ -56,8 +82,8 @@ html {
 
 body {
   font-family: 'DM Sans', sans-serif;
-  color: var(--text);
-  background: var(--white);
+  color: var(--text-primary);
+  background: var(--surface);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -102,7 +128,7 @@ table img {
 
 a:focus-visible,
 button:focus-visible {
-  outline: 2px solid var(--green);
+  outline: 2px solid var(--brand-primary);
   outline-offset: 3px;
 }
 
@@ -111,7 +137,7 @@ button:focus-visible {
   display: inline-flex;
   align-items: center;
   min-height: 32px;
-  color: #64748b;
+  color: var(--text-navigation);
   font-size: .875rem;
   font-weight: 600;
   transition: color 180ms ease;
@@ -126,12 +152,12 @@ button:focus-visible {
   height: 2px;
   transform: scaleX(0);
   transform-origin: center;
-  background: var(--amber);
+  background: var(--brand-accent);
   transition: transform 180ms ease;
 }
 
 .nav-link:hover,
-.nav-link-active { color: var(--green); }
+.nav-link-active { color: var(--brand-primary); }
 .nav-link:hover::after,
 .nav-link-active::after { transform: scaleX(1); }
 
@@ -140,7 +166,7 @@ button:focus-visible {
   align-items: center;
   min-height: 34px;
   border-radius: 10px;
-  background: var(--green);
+  background: var(--brand-primary);
   padding: 0 16px;
   color: white;
   font-size: .875rem;
@@ -148,10 +174,14 @@ button:focus-visible {
   transition: background-color 180ms ease, transform 180ms ease;
 }
 
-.nav-cta:hover { background: var(--green-light); transform: translateY(-1px); }
+.nav-cta:hover { background: var(--brand-primary-hover); transform: translateY(-1px); }
+
+.home-hero-accent-glow {
+  background: radial-gradient(circle at top right, color-mix(in srgb, var(--brand-accent) 40%, transparent), transparent 35%);
+}
 
 .page-transition {
-  animation: pageEnter 180ms ease-out both;
+  animation: pageEnter 300ms ease-out both;
 }
 
 .route-loader {
@@ -161,7 +191,7 @@ button:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgb(248 251 247 / 78%);
+  background: color-mix(in srgb, var(--surface-panel) 78%, transparent);
   backdrop-filter: blur(5px);
   transition: opacity 160ms ease, visibility 160ms ease;
 }
@@ -183,23 +213,19 @@ button:focus-visible {
   justify-content: center;
   width: 72px;
   height: 52px;
-  border: 1px solid rgb(15 76 53 / 12%);
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 12%, transparent);
   border-radius: 18px;
-  background: rgb(255 255 255 / 92%);
-  box-shadow: 0 12px 35px rgb(15 76 53 / 10%);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  box-shadow: 0 12px 35px color-mix(in srgb, var(--brand-primary) 10%, transparent);
 }
 
-.route-loader-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: var(--green);
-  animation: loaderPulse 720ms ease-in-out infinite;
+.route-loader-spinner {
+  color: var(--brand-primary);
+  animation: loaderSpin 720ms linear infinite;
 }
 
-@keyframes loaderPulse {
-  0%, 100% { transform: translateY(0); opacity: .35; }
-  50% { transform: translateY(-4px); opacity: 1; }
+@keyframes loaderSpin {
+  to { transform: rotate(360deg); }
 }
 
 @keyframes pageEnter {
@@ -210,17 +236,17 @@ button:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .page-transition,
   .route-loader,
-  .route-loader-dot { animation: none; transition: none; }
+  .route-loader-spinner { animation: none; transition: none; }
 }
 
 .admin-input {
-  @apply mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-normal outline-none transition placeholder:text-slate-400 focus:border-[#0f4c35] focus:ring-2 focus:ring-[#0f4c35]/10;
+  @apply mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-normal outline-none transition placeholder:text-slate-400 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10;
 }
 
 /* ── Custom Scrollbar ────────────────────────────────────────────
  * Subtle scrollbar that matches the brand aesthetic.
  */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: #f1f5f9; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+::-webkit-scrollbar-track { background: var(--surface-scrollbar); }
+::-webkit-scrollbar-thumb { background: var(--border-scrollbar); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-hover); }

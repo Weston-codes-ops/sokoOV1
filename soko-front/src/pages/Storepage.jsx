@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { Search, Package, X, SlidersHorizontal } from 'lucide-react'
 import api from '../api/axios'
 import Navbar from '../components/Navbar'
+import ProductGrid from '../components/ProductGrid'
 
 export default function ProductsPage() {
   const [searchParams] = useSearchParams()
@@ -90,10 +91,8 @@ export default function ProductsPage() {
     setPage(0)
   }
 
-  const gridClasses = 'grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5'
-
   return (
-    <div className="min-h-screen flex flex-col bg-[#f4f8f4]">
+    <div className="min-h-screen flex flex-col bg-surface-soft">
       <Navbar />
 
       <div className="flex flex-1 overflow-hidden min-h-0">
@@ -106,18 +105,18 @@ export default function ProductsPage() {
 
           <div className={`
             ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-            fixed left-0 top-0 bottom-0 z-50 w-72 bg-[#f4fbf5] border-r border-gray-200 shadow-2xl lg:top-0 lg:h-screen lg:max-h-screen lg:static lg:translate-x-0 lg:shadow-none lg:w-64 lg:bg-transparent lg:border-none
+            fixed left-0 top-0 bottom-0 z-50 w-72 bg-surface-soft border-r border-gray-200 shadow-2xl lg:top-0 lg:h-screen lg:max-h-screen lg:static lg:translate-x-0 lg:shadow-none lg:w-64 lg:bg-transparent lg:border-none
             flex flex-col overflow-y-auto lg:overflow-y-hidden transition-transform duration-300 ease-out
           `}>
 
             <div className="px-5 py-5 border-b border-gray-100 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <SlidersHorizontal size={15} className="text-[#0f4c35]" />
+                <SlidersHorizontal size={15} className="text-brand-primary" />
                 <span className="text-sm font-extrabold text-gray-900">Filters</span>
               </div>
               {hasFilters && (
                 <button onClick={clearFilters}
-                  className="text-xs text-[#0f4c35] font-semibold hover:underline">
+                  className="text-xs text-brand-primary font-semibold hover:underline">
                   Clear all
                 </button>
               )}
@@ -129,10 +128,10 @@ export default function ProductsPage() {
                   type="checkbox"
                   checked={selectedCategories.length === 0 && selectedSubcategories.length === 0}
                   onChange={clearFilters}
-                  className="w-4 h-4 rounded border-gray-300 accent-[#0f4c35] cursor-pointer"
+                  className="w-4 h-4 rounded border-gray-300 accent-brand-primary cursor-pointer"
                 />
                 <span className={`text-sm font-semibold transition-colors ${
-                  selectedCategories.length === 0 && selectedSubcategories.length === 0 ? 'text-[#0f4c35]' : 'text-gray-700 group-hover:text-[#0f4c35]'
+                  selectedCategories.length === 0 && selectedSubcategories.length === 0 ? 'text-brand-primary' : 'text-gray-700 group-hover:text-brand-primary'
                 }`}>
                   All Products
                 </span>
@@ -150,10 +149,10 @@ export default function ProductsPage() {
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => handleCategoryChange(cat.id)}
-                        className="w-4 h-4 rounded border-gray-300 accent-[#0f4c35] cursor-pointer"
+                        className="w-4 h-4 rounded border-gray-300 accent-brand-primary cursor-pointer"
                       />
                       <span className={`text-sm font-bold transition-colors ${
-                        isSelected ? 'text-[#0f4c35]' : 'text-gray-800 group-hover:text-[#0f4c35]'
+                        isSelected ? 'text-brand-primary' : 'text-gray-800 group-hover:text-brand-primary'
                       }`}>
                         {cat.name}
                       </span>
@@ -168,11 +167,11 @@ export default function ProductsPage() {
                                 type="checkbox"
                                 checked={isSubSelected}
                                 onChange={() => handleSubChange(sub.id, cat.id)}
-                                className="w-3.5 h-3.5 rounded border-gray-300 accent-[#0f4c35] cursor-pointer"
+                                className="w-3.5 h-3.5 rounded border-gray-300 accent-brand-primary cursor-pointer"
                               />
                               <span className={`text-xs transition-colors ${
                                 isSubSelected
-                                  ? 'text-[#0f4c35] font-bold'
+                                  ? 'text-brand-primary font-bold'
                                   : 'text-gray-500 group-hover:text-gray-800 font-medium'
                               }`}>
                                 {sub.name}
@@ -188,11 +187,11 @@ export default function ProductsPage() {
             </div>
 
             {hasFilters && (
-              <div className="px-5 py-4 border-t border-gray-100 bg-[#e8f5ee]">
-                <p className="text-xs font-bold text-[#0f4c35] mb-2">Active filters</p>
+              <div className="px-5 py-4 border-t border-gray-100 bg-surface-tint">
+                <p className="text-xs font-bold text-brand-primary mb-2">Active filters</p>
                 <div className="flex flex-wrap gap-1.5">
                   {selectedCatObj.map(cat => (
-                    <span key={cat.id} className="inline-flex items-center gap-1 text-xs bg-white text-[#0f4c35] px-2 py-0.5 rounded-full border border-[#0f4c35]/20 font-medium">
+                    <span key={cat.id} className="inline-flex items-center gap-1 text-xs bg-white text-brand-primary px-2 py-0.5 rounded-full border border-brand-primary/20 font-medium">
                       {cat.name}
                       <button onClick={() => handleCategoryChange(cat.id)}>
                         <X size={9} />
@@ -200,7 +199,7 @@ export default function ProductsPage() {
                     </span>
                   ))}
                   {selectedSubObj.map(sub => (
-                    <span key={sub.id} className="inline-flex items-center gap-1 text-xs bg-white text-[#0f4c35] px-2 py-0.5 rounded-full border border-[#0f4c35]/20 font-medium">
+                    <span key={sub.id} className="inline-flex items-center gap-1 text-xs bg-white text-brand-primary px-2 py-0.5 rounded-full border border-brand-primary/20 font-medium">
                       {sub.name}
                       <button onClick={() => handleSubChange(sub.id, sub.categoryId)}><X size={9} /></button>
                     </span>
@@ -216,7 +215,7 @@ export default function ProductsPage() {
           <div className="mx-auto w-full max-w-[1800px] px-4 pt-8 pb-12 sm:px-6 lg:px-10">
 
             {/* Top bar — search + mobile filter + count */}
-            <div className="mb-8 flex flex-col gap-5 border border-[#dce9df] bg-white/80 p-5 shadow-sm sm:p-7 lg:flex-row lg:items-end lg:justify-between">
+            <div className="mb-8 flex flex-col gap-5 border border-brand p-5 bg-white/80 shadow-sm sm:p-7 lg:flex-row lg:items-end lg:justify-between">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <h1 className="text-md font-black tracking-tight text-slate-950">Store</h1>
@@ -235,7 +234,7 @@ export default function ProductsPage() {
                   <input
                     type="text" placeholder="Search products..."
                     value={search} onChange={e => { setSearch(e.target.value); setPage(0) }}
-                    className="w-full border border-gray-200 bg-white py-3 pl-10 pr-10 text-sm shadow-sm outline-none transition focus:border-[#0f4c35] focus:ring-2 focus:ring-[#0f4c35]/15"
+                    className="w-full border border-gray-200 bg-white py-3 pl-10 pr-10 text-sm shadow-sm outline-none transition focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/15"
                   />
                   {search && (
                     <button onClick={() => setSearch('')}
@@ -249,32 +248,19 @@ export default function ProductsPage() {
 
             {/* ── PRODUCT GRID ───────────────────────────────────── */}
             {loading ? (
-              <div className={gridClasses}>
-                {[...Array(12)].map((_, i) => (
-                  <div key={i} className="animate-pulse border border-gray-100 overflow-hidden">
-                    <div className="aspect-4\/3 bg-gray-100" />
-                    <div className="p-4 space-y-3">
-                      <div className="h-3 bg-gray-100 rounded-full w-3/4" />
-                      <div className="h-4 bg-gray-100 rounded-full w-full" />
-                      <div className="h-4 bg-gray-100 rounded-full w-1/2" />
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <ProductGrid loading />
             ) : displayProducts.length === 0 ? (
               <div className="text-center py-20 border border-dashed border-gray-200 rounded-3xl">
                 <Package size={32} className="text-gray-200 mx-auto mb-3" />
                 <p className="text-sm font-semibold text-slate-400">No products found</p>
                 <button onClick={clearFilters}
-                  className="mt-4 inline-flex items-center justify-center rounded-full bg-[#0f4c35] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#14492e]">
+                  className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-primary px-4 py-2 text-xs font-semibold text-white transition hover:bg-brand-primary-hover">
                   Reset search
                 </button>
               </div>
             ) : (
               <>
-                <div className={gridClasses}>
-                  {pagedProducts.map(p => <ProductCard key={p.id} product={p} />)}
-                </div>
+                <ProductGrid products={pagedProducts} />
 
                 {totalPages > 1 && (
                   <div className="flex items-center justify-center gap-2 mt-10">
@@ -295,45 +281,5 @@ export default function ProductsPage() {
         </div>
       </div>
     </div>
-  )
-}
-
-function ProductCard({ product }) {
-  return (
-    <Link to={`/products/${product.slug}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-[#e1e9e3] bg-white shadow-sm transition duration-300 ease-out hover:-translate-y-1 hover:border-[#0f4c35]/30 hover:shadow-xl">
-      <div className="relative aspect-4\/3 overflow-hidden bg-[#edf4ee]">
-        {product.imageURL
-          ? <img src={product.imageURL} alt={product.name}
-              className="w-full h-full object-contain p-3 transition-transform duration-300" />
-          : <div className="w-full h-full flex items-center justify-center">
-              <Package size={20} className="text-gray-300" />
-            </div>
-        }
-        {product.stockQuantity === 0 && (
-          <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
-            <span className="text-xs font-semibold text-gray-400">Out of stock</span>
-          </div>
-        )}
-      </div>
-      <div className="flex flex-1 flex-col gap-3 p-5">
-        <div className="flex items-center justify-between gap-2">
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#eaf8ef] text-[11px] font-semibold uppercase tracking-[0.15em] text-[#0f4c35]">
-            {product.subcategories?.[0] || product.categories?.[0] || 'General'}
-          </span>
-        </div>
-        <h2 className="text-sm font-semibold text-slate-950 line-clamp-2 leading-snug">
-          {product.name}
-        </h2>
-        <div className="mt-auto flex items-center justify-between gap-3">
-          <p className="text-base font-extrabold text-slate-950">
-            KSh {Number(product.price).toLocaleString()}
-          </p>
-          <span className={`text-xs font-semibold rounded-full px-2.5 py-1 ${product.stockQuantity > 0 ? 'bg-[#e8f5ee] text-[#0f4c35]' : 'bg-slate-100 text-slate-500'}`}>
-            {product.stockQuantity > 0 ? 'In stock' : 'Sold out'}
-          </span>
-        </div>
-      </div>
-    </Link>
   )
 }

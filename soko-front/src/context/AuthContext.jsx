@@ -5,20 +5,20 @@
  * without passing props down through every component.
  *
  * This context stores:
- * - user     : the logged-in user object (name, email, role)
+ * - customer     : the logged-in customer object (name, email, role)
  * - token    : the JWT token string
- * - login()  : saves user + token to state AND localStorage
+ * - login()  : saves customer + token to state AND localStorage
  * - logout() : clears everything
  *
- * localStorage is used so the user stays logged in after
+ * localStorage is used so the customer stays logged in after
  * a page refresh. When the app loads, we read from localStorage
  * to restore the session.
  *
  * Usage anywhere in the app:
- *   const { user, login, logout } = useAuth()
+ *   const { customer, login, logout } = useAuth()
  */
 
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 
 // 1. Create the context object
 const AuthContext = createContext(null)
@@ -27,8 +27,8 @@ const AuthContext = createContext(null)
 export function AuthProvider({ children }) {
 
   // Initialise state from localStorage so session persists on refresh
-  const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem('user')
+  const [customer, setUser] = useState(() => {
+    const stored = localStorage.getItem('customer')
     return stored ? JSON.parse(stored) : null
   })
 
@@ -36,33 +36,44 @@ export function AuthProvider({ children }) {
     return localStorage.getItem('token') || null
   })
 
+  useEffect(() => {
+    const clearExpiredSession = () => {
+      setUser(null)
+      setToken(null)
+    }
+    window.addEventListener('auth:expired', clearExpiredSession)
+    return () => window.removeEventListener('auth:expired', clearExpiredSession)
+  }, [])
+
   /*
-   * login() — called after a successful POST /auth/login
-   * Saves the user object and JWT token to both state and localStorage
+  * login() — called after a successful authentication callback
+  * Saves the customer object and application JWT to state and localStorage
    */
-  const login = (userData, jwtToken) => {
+  const login = (userData, jwtToken, refreshToken) => {
     setUser(userData)
     setToken(jwtToken)
-    localStorage.setItem('user', JSON.stringify(userData))
+    localStorage.setItem('customer', JSON.stringify(userData))
     localStorage.setItem('token', jwtToken)
+    if (refreshToken) localStorage.setItem('refreshToken', refreshToken)
   }
 
   /*
    * logout() — clears everything
-   * The user is redirected to /login or / in the component that calls this
+  * The caller decides where to navigate after signing out.
    */
   const logout = () => {
     setUser(null)
     setToken(null)
-    localStorage.removeItem('user')
+    localStorage.removeItem('customer')
     localStorage.removeItem('token')
+    localStorage.removeItem('refreshToken')
   }
 
-  // Convenience boolean — true if the user is logged in
+  // Convenience boolean — true if the customer is logged in
   const isLoggedIn = !!token
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isLoggedIn }}>
+    <AuthContext.Provider value={{ customer, token, login, logout, isLoggedIn }}>
       {children}
     </AuthContext.Provider>
   )

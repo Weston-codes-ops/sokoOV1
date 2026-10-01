@@ -10,14 +10,14 @@
  * - Route            : maps a URL path to a component
  *
  * Protected routes use a ProtectedRoute wrapper that checks
- * if the user is logged in before rendering the page.
+ * if the customer is logged in before rendering the page.
  * If not logged in, it redirects to /login.
  *
- * Admin routes additionally check if user.role === 'ADMIN'.
+ * Admin routes additionally check if customer.role === 'ADMIN'.
  * If a non-admin tries to access /admin/*, they get redirected.
  */
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { getAdminRedirectUrl, isAdminSubdomain } from './utils/adminDomain'
@@ -28,12 +28,14 @@ import Storepage      from './pages/Storepage'
 import Cartpage          from './pages/Cartpage'
 import Aboutpage         from './pages/Aboutpage'
 import FAQpage           from './pages/FAQpage'
-import Loginpage         from './pages/Auth/Loginpage'
-import Registerpage      from './pages/Auth/Registerpage'
-import AdminLoginPage    from './pages/AdminLoginPage'
-import AdminRegisterPage from './pages/AdminRegisterPage'
-import AdminProductsPage from './pages/AdminProductsPage'
+import AdminProductsPage from './pages/admin/AdminProductsPage'
 import AdminLayout       from './components/AdminLayout'
+import Registerpage      from './pages/Auth/Registerpage'
+import Loginpage         from './pages/Auth/Loginpage'
+import AdminLoginPage from './pages/admin/AdminLoginPage'
+import AdminRegisterPage from './pages/admin/AdminRegisterPage'
+import NotFound from './pages/util/Notfound'
+import Loading from './components/Loading'
 
 
 /*
@@ -48,16 +50,16 @@ import AdminLayout       from './components/AdminLayout'
  *   <ProtectedRoute adminOnly><AdminProductsPage /></ProtectedRoute>
  */
 function ProtectedRoute({ children, adminOnly = false, customerOnly = false }) {
-  const { isLoggedIn, user } = useAuth()
+  const { isLoggedIn, customer } = useAuth()
 
-  // Not logged in → redirect to login page
-  if (!isLoggedIn) return <Navigate to="/login" replace />
+  // Authentication routes are being replaced with OAuth.
+  if (!isLoggedIn) return <Navigate to={adminOnly ? '/_market-ops/login' : '/login'} replace />
 
   // Logged in but not admin → redirect to home
-  if (adminOnly && user?.role !== 'ADMIN') return <Navigate to="/" replace />
+  if (adminOnly && customer?.role !== 'ADMIN') return <Navigate to="/" replace />
 
   // Admins operate the shop and do not have customer profiles or carts.
-  if (customerOnly && user?.role !== 'USER') return <Navigate to="/" replace />
+  if (customerOnly && customer?.role !== 'USER') return <Navigate to="/" replace />
 
   return children
 }
@@ -82,10 +84,18 @@ function AdminRoute({ children }) {
 }
 
 function RouteTransition({ children }) {
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setLoading(false), 1000)
+    return () => window.clearTimeout(timer)
+  }, [])
+
   return (
-    <div className="page-transition-content">
-      {children}
-    </div>
+    <>
+      {!loading && <div className="page-transition-content">{children}</div>}
+      <Loading visible={loading} />
+    </>
   )
 }
 
@@ -104,26 +114,18 @@ function AppRoutes() {
         {/* ── Public routes — anyone can access ─────────────────── */}
         <Route path="/"        element={<Homepage />} />
         <Route path="/store"   element={<Storepage />} />
-        <Route path="/login"   element={<Loginpage />} />
-        <Route path="/register" element={<Registerpage />} />
         <Route path="/about"   element={<Aboutpage />} />
         <Route path="/faqs"    element={<FAQpage />} />
-        
+        <Route path="/register" element={<Registerpage />} />
+        <Route path="/login" element={<Loginpage />} />
+        <Route path="/_market-ops/login" element={<AdminRoute><AdminLoginPage /></AdminRoute>} />
+        <Route path="/_market-ops/admins-pvp" element={<AdminRoute><AdminRegisterPage /></AdminRoute>} />
 
         {/* ── Protected routes — must be logged in ──────────────── */}
         <Route path="/cart" element={
           <ProtectedRoute customerOnly><Cartpage /></ProtectedRoute>
         } />
     
-        {/* Quiet admin routes — only reachable on the admin host */}
-        <Route path="/_market-ops/entrance" element={
-          <AdminRoute><AdminLoginPage /></AdminRoute>
-        } />
-
-        <Route path="/_market-ops/provision" element={
-          <AdminRoute><AdminRegisterPage /></AdminRoute>
-        } />
-
         <Route path="/_market-ops/catalog" element={
           <AdminRoute>
             <ProtectedRoute adminOnly>
@@ -189,7 +191,7 @@ function AppRoutes() {
       
 
         {/* ── Catch-all — redirect unknown URLs to home ─────────── */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
     </RouteTransition>

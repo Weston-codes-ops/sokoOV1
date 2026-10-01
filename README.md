@@ -6,7 +6,7 @@ SokoOnline is a React/Vite storefront backed by a Spring Boot REST API and Postg
 
 ```powershell
 Copy-Item .env.example .env
-# Edit .env and replace the example password and JWT secret.
+# Edit .env and replace the database password, JWT secret, and admin setup key.
 docker compose up --build
 ```
 
@@ -23,4 +23,3 @@ Start PostgreSQL, set `SPRING_DATASOURCE_PASSWORD`, then run `sokoonline\\mvnw.c
 - `soko-front`: React/Vite frontend
 - `sokoonline`: Spring Boot API
 - `docker-compose.yml`: local frontend, backend, and PostgreSQL stack
-- `DEPLOYMENT.md`: GitHub safety, hosting options, and deployment variables

@@ -9,14 +9,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CartRepository extends JpaRepository<Cart, UUID> {
-    Optional<Cart> findByUser_Id(UUID userId);
+    Optional<Cart> findByCustomer_Id(UUID customerId);
 
     @Query("""
-SELECT c from Cart c
-LEFT JOIN FETCH c.items i
-LEFT JOIN FETCH i.product
-WHERE c.user.id = :userId
+    SELECT c FROM Cart c
+    LEFT JOIN FETCH c.items i
+    LEFT JOIN FETCH i.product
+    WHERE c.customer.id = :customerId
 """)
-    Optional<Cart> findCartByUserIdWithItems(@Param("userId") UUID userId);
+    Optional<Cart> findCartByCustomerIdWithItems(@Param("customerId") UUID customerId);
+
 
 }

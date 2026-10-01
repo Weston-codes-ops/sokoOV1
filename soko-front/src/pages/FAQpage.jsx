@@ -28,7 +28,7 @@ export default function FAQPage() {
       <main className="flex-1">
 
         {/* Header */}
-        <section className="bg-[#f9fafb] border-b border-gray-100 py-12">
+        <section className="bg-surface-subtle border-b border-gray-100 py-12">
           <div className="max-w-5xl mx-auto px-6 text-center">
             <h1 className="text-2xl font-extrabold text-gray-900 mb-2">Frequently Asked Questions</h1>
             <p className="text-sm text-gray-500">Everything you need to know about shopping with SokoOnline.</p>
@@ -47,7 +47,7 @@ export default function FAQPage() {
                     className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition-colors">
                     <span className="text-sm font-semibold text-gray-900">{faq.q}</span>
                     {open === i
-                      ? <ChevronUp size={15} className="text-[#0f4c35] shrink-0" />
+                      ? <ChevronUp size={15} className="text-brand-primary shrink-0" />
                       : <ChevronDown size={15} className="text-gray-400 shrink-0" />}
                   </button>
                   {/* Answer — shown when expanded */}

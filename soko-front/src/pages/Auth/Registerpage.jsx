@@ -1,198 +1,84 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Eye, EyeOff } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
+import sokoImg from '../../../public/sokoonline-logo.svg'
 import api from '../../api/axios'
-import logo from '../../assets/sokoonline-logo.svg'
 
-export default function RegisterPage() {
-  const navigate  = useNavigate()
 
-  const [form, setForm] = useState({
-    name: '', email: '', password: '', confirmPassword: ''
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading]           = useState(false)
-  const [error, setError]               = useState('')
-  const [success, setSuccess]           = useState('')
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-    setError('')
-    setSuccess('')
-  }
+export default function Registerpage() {
+    const [error, setError] = useState('')
+    const [submitting, setSubmitting] = useState(false)
+    const navigate = useNavigate()
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    if (form.password !== form.confirmPassword) {
-      setError('Passwords do not match.')
-      return
+    const submit = async (event) => {
+        event.preventDefault()
+        setError('')
+        const formData = new FormData(event.currentTarget)
+        const password = formData.get('password')
+        if (password !== formData.get('confirmPassword')) {
+            setError('The passwords do not match.')
+            return
+        }
+
+        setSubmitting(true)
+        try {
+            const { data } = await api.post('/customers/register', {
+                email: formData.get('email'),
+                password,
+            })
+            navigate('/login', { replace: true, state: { notice: data.message || 'Account created. Sign in to continue.' } })
+        } catch (requestError) {
+            setError(requestError.response?.data?.message || 'Unable to create your account.')
+        } finally {
+            setSubmitting(false)
+        }
     }
-    if (form.password.length < 8) {
-      setError('Password must be at least 8 characters.')
-      return
-    }
-    setLoading(true)
-    try {
-      const nameParts = form.name.trim().split(/\s+/)
-      const res = await api.post('/auth/register', {
-        firstName: nameParts[0] || form.name,
-        lastName: nameParts.slice(1).join(' '),
-        email: form.email,
-        password: form.password,
-      })
-      if (!res.data) throw new Error('Registration did not return a response.')
-      setSuccess('Account created successfully. Taking you to sign in...')
-      window.setTimeout(() => navigate('/login', {
-        state: { message: 'Account created successfully. Please sign in.' },
-      }), 1200)
-    } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
 
-  return (
-    <div className="min-h-screen flex mx-50" style={{
-      background: 'radial-gradient(ellipse at top left, #e8f5ee 0%, #f9fafb 40%, #f0f4ff 100%)'
-    }}>
+return(
 
-      {/* ══ LEFT PANEL — solid green, logo + text ══════════════════ */}
-      <div className="hidden lg:flex lg:w-2/5 flex-col justify-center px-14 bg-[#0f4c35]">
-        <Link to="/" className="mb-8">
-          <img src={logo} alt="SokoOnline" className="h-10 w-auto" />
-        </Link>
-        <h2 className="text-3xl font-extrabold text-white leading-snug mb-3">
-          Join thousands<br />
-          <span className="text-[#f59e0b]">of happy shoppers.</span>
-        </h2>
-        <p className="text-white/50 text-sm leading-relaxed">
-          Create a free account and start shopping<br />
-          fresh produce, fashion & home essentials.
-        </p>
-      </div>
-
-      {/* ══ RIGHT PANEL — Register form ════════════════════════════ */}
-      <div className="flex-1 flex flex-col bg-white">
-
-        {/* Top bar */}
-        <div className="flex items-center justify-between px-10 py-6 border-b border-gray-100">
-          <Link to="/" className="lg:hidden">
-            <img src={logo} alt="SokoOnline" className="h-7 w-auto" />
-          </Link>
-          <span className="hidden lg:block" />
-          <Link to="/"
-            className="text-xs text-gray-400 hover:text-[#0f4c35] font-medium transition-colors">
-            ← Back to home
-          </Link>
+    <section className="flex min-h-screen justify-center bg-surface">
+    <div className="grid w-full max-w-5xl min-h-screen grid-cols-1 bg-surface md:grid-cols-[0.9fr_1.1fr]">
+        <div className="relative flex flex-col items-center justify-center bg-brand-primary p-8 sm:p-12 md:sticky md:top-0 md:h-screen">
+            <Link to="/" className="absolute left-8 top-8 inline-flex items-center gap-2 text-sm font-semibold text-white/80 transition-colors hover:text-white sm:left-12 sm:top-12">
+                <ArrowLeft size={16} /> Back to home
+            </Link>
+            <img src={sokoImg} alt="SokoOnline" className="h-30 w-48 max-w-full" />
         </div>
-
-        {/* Form centered */}
-        <div className="flex-1 flex items-center justify-center px-10">
-          <div className="w-full max-w-md">
-
-            <div className="mb-8">
-              <h1 className="text-2xl font-extrabold text-gray-900 mb-1">Create an account</h1>
-              <p className="text-sm text-gray-400">Join SokoOnline and start shopping today</p>
-            </div>
-
-            {error && (
-              <div className="mb-5 p-3 bg-red-50 border border-red-100 rounded-lg text-sm text-red-600">
-                {error}
-              </div>
-            )}
-
-            {success && (
-              <div className="mb-5 p-3 bg-green-50 border border-green-100 rounded-lg text-sm text-[#0f4c35]">
-                {success}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-
-              {/* Full name */}
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                  Full name
+        <div className="flex items-center justify-center bg-surface p-8 sm:p-12 md:h-screen md:overflow-scroll md:overscroll-contain">
+            <form onSubmit={submit} className="flex w-full max-w-sm flex-col gap-5">
+                <header className="space-y-2 mt-3">
+                    <h1 className="text-2xl font-extrabold text-text-primary">Create your account</h1>
+                    <p className="text-sm leading-6 text-text-muted">Join SokoOnline and discover local favorites.</p>
+                </header>
+                {error && <p role="alert" className="border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+                <label htmlFor="register-email" className="flex flex-col gap-2 text-sm font-semibold text-text-primary">
+                    Email
+                    <input id="register-email" name="email" type="email" autoComplete="email" required placeholder="Enter your email" className="w-full rounded-lg border border-border-default bg-surface px-3 py-2.5 text-sm font-normal text-text-primary outline-none transition placeholder:text-text-faint focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10" />
                 </label>
-                <input
-                  type="text" name="name" value={form.name}
-                  onChange={handleChange} placeholder="John Kamau"
-                  required autoComplete="name"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0f4c35] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
-                />
-              </div>
-
-              {/* Email */}
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                  Email address
+                <label htmlFor="register-password" className="flex flex-col gap-2 text-sm font-semibold text-text-primary">
+                    Password
+                    <input id="register-password" name="password" type="password" autoComplete="new-password" required placeholder="Create a password" className="w-full rounded-lg border border-border-default bg-surface px-3 py-2.5 text-sm font-normal text-text-primary outline-none transition placeholder:text-text-faint focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10" />
                 </label>
-                <input
-                  type="email" name="email" value={form.email}
-                  onChange={handleChange} placeholder="you@example.com"
-                  required autoComplete="email"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0f4c35] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
-                />
-              </div>
-
-              {/* Password */}
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                  Password
+                <label htmlFor="register-confirm-password" className="flex flex-col gap-2 text-sm font-semibold text-text-primary">
+                    Confirm password
+                    <input id="register-confirm-password" name="confirmPassword" type="password" autoComplete="new-password" required placeholder="Re-enter your password" className="w-full rounded-lg border border-border-default bg-surface px-3 py-2.5 text-sm font-normal text-text-primary outline-none transition placeholder:text-text-faint focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10" />
                 </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    name="password" value={form.password}
-                    onChange={handleChange} placeholder="Min. 8 characters"
-                    required autoComplete="new-password"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0f4c35] focus:border-transparent transition-all pr-11 bg-gray-50 focus:bg-white"
-                  />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                    {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Confirm password */}
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                  Confirm password
-                </label>
-                <input
-                  type="password" name="confirmPassword" value={form.confirmPassword}
-                  onChange={handleChange} placeholder="Repeat your password"
-                  required autoComplete="new-password"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0f4c35] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
-                />
-              </div>
-
-              <button type="submit" disabled={loading}
-                className="w-full py-3 bg-[#0f4c35] hover:bg-[#1a6b4a] text-white text-sm font-bold rounded-xl transition-colors disabled:opacity-60 disabled:cursor-not-allowed mt-1">
-                {loading ? 'Creating account...' : 'Create account'}
-              </button>
+                <button type="submit" disabled={submitting} className="mt-1 min-h-11 rounded-lg bg-brand-primary px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-brand-primary-hover disabled:cursor-wait disabled:opacity-60">
+                    {submitting ? 'Creating account...' : 'Create account'}
+                </button>
+                <p className="text-center text-sm text-text-muted">
+                    Have an account? <Link to="/login" className="font-bold text-brand-primary hover:text-brand-primary-hover">Sign in</Link>
+                </p>
             </form>
-
-            <div className="flex items-center gap-4 my-6">
-              <div className="flex-1 h-px bg-gray-100" />
-              <span className="text-xs text-gray-300 font-medium">or</span>
-              <div className="flex-1 h-px bg-gray-100" />
-            </div>
-
-            <p className="text-center text-sm text-gray-400">
-              Already have an account?{' '}
-              <Link to="/login" className="text-[#0f4c35] font-bold hover:underline">
-                Sign in
-              </Link>
-            </p>
-          </div>
         </div>
-
-        <div className="py-6" />
-      </div>
     </div>
-  )
+
+
+
+    </section>
+
+)
+
+
 }

@@ -1,19 +1,21 @@
 package com.westoncodeops.sokoonline.config;
 
-import com.westoncodeops.sokoonline.security.jwt.JwtAuthenticationFilter;
-import lombok.RequiredArgsConstructor;
+
+import com.westoncodeops.sokoonline.config.jwt.JwtAuthenticationFilter;
+import com.westoncodeops.sokoonline.entities.Customer;
+import com.westoncodeops.sokoonline.entities.admin.Admin;
+import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -24,107 +26,62 @@ import java.util.Arrays;
 import java.util.List;
 
 @Configuration
-@EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
-
-    private final JwtAuthenticationFilter jwtAuthFilter;
-    private final UserDetailsService userDetailsService;
-
-    @Value("${app.cors.allowed-origins:http://localhost:*}")
-    private String[] corsAllowedOrigins;
-
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+    public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .headers(headers -> headers
-                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(auth -> auth
+    public CorsConfigurationSource corsConfigurationSource(
+            @Value("${app.cors.allowed-origins:http://localhost:5173}") String allowedOrigins) {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(Arrays.stream(allowedOrigins.split(","))
+            .map(String::trim)
+            .filter(origin -> !origin.isEmpty())
+            .toList());
+    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 
-                        .requestMatchers(PUBLIC_PATHS).permitAll()
-
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, PRODUCTS_READ_PATHS).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
-
-                        .requestMatchers(HttpMethod.POST, PRODUCTS_WRITE).hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, PRODUCTS_WRITE_ID).hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, PRODUCTS_WRITE_ID).hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, PRODUCTS_WRITE_ID).hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.POST, CATEGORY_WRITE).hasAuthority("ADMIN")
-                        .requestMatchers("/api/v1/admin/media/**").hasAuthority("ADMIN")
-
-                        .requestMatchers(CART_PATHS).hasAuthority("USER")
-
-                        .requestMatchers(ME_PATH).hasAuthority("USER")
-                        .requestMatchers(HttpMethod.GET, USER_BY_ID_PATH).hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, USER_BY_ID_DELETE_PATH).hasAuthority("ADMIN")
-
-                        .anyRequest().authenticated());
-        return http.build();
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
     }
 
-    private static final String[] PUBLIC_PATHS = new String[]{
-            "/",
-            "/error",
-            "/v3/api-docs/**",
-            "/swagger-ui/**",
-            "/swagger-ui.html",
-            "/swagger-resources/**",
-            "/webjars/**",
-            "/api/v1/auth/register",
-            "/api/v1/auth/login",
-            "/api/v1/auth/refresh",
-            "/api/v1/admin/auth/register",
-            "/api/v1/admin/auth/login",
-                        "/api/v1/categories",
-            "/actuator/health"
-    };
-
-    private static final String[] PRODUCTS_READ_PATHS = new String[]{
-            "/api/v1/products/**"
-    };
-
-    private static final String[] PRODUCTS_WRITE = new String[]{
-            "/api/v1/products"
-    };
-    private static final String[] PRODUCTS_WRITE_ID = new String[]{
-            "/api/v1/products/{id}"
-    };
-
-    private static final String[] CATEGORY_WRITE = new String[]{
-            "/api/v1/categories"
-    };
-
-    private static final String[] CART_PATHS = new String[]{
-            "/api/v1/cart/**"
-    };
-
-    private static final String ME_PATH = "/api/v1/auth/me";
-    private static final String USER_BY_ID_PATH = "/api/v1/auth/users/{id}";
-    private static final String USER_BY_ID_DELETE_PATH = "/api/v1/auth/users/{id}";
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                           JwtAuthenticationFilter jwtAuthenticationFilter,
+                           CorsConfigurationSource corsConfigurationSource) throws Exception {
+    http.csrf(AbstractHttpConfigurer::disable)
+        .cors(cors -> cors.configurationSource(corsConfigurationSource))
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(authorize -> authorize
+            .requestMatchers("/api/v1/customers/register", "/api/v1/customers/login",
+                "/api/v1/customers/refresh", "/api/v1/admin/auth/**",
+                "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/v1/products/**", "/api/v1/categories/**").permitAll()
+            .requestMatchers("/api/v1/admin/**").access((authentication, context) ->
+                new AuthorizationDecision(authentication.get().getPrincipal() instanceof Admin))
+            .requestMatchers("/api/v1/cart/**").access((authentication, context) ->
+                new AuthorizationDecision(authentication.get().getPrincipal() instanceof Customer))
+            .requestMatchers(HttpMethod.POST, "/api/v1/products/**", "/api/v1/categories/**").access(
+                (authentication, context) -> new AuthorizationDecision(
+                    authentication.get().getPrincipal() instanceof Admin))
+            .requestMatchers(HttpMethod.PUT, "/api/v1/products/**").access(
+                (authentication, context) -> new AuthorizationDecision(
+                    authentication.get().getPrincipal() instanceof Admin))
+            .requestMatchers(HttpMethod.DELETE, "/api/v1/products/**").access(
+                (authentication, context) -> new AuthorizationDecision(
+                    authentication.get().getPrincipal() instanceof Admin))
+            .anyRequest().authenticated())
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    return http.build();
+    }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(Arrays.asList(corsAllowedOrigins));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept"));
-        config.setExposedHeaders(List.of("Authorization", "Content-Type", "Content-Disposition"));
-        config.setAllowCredentials(true);
-        config.setMaxAge(3600L);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
+    public FilterRegistrationBean<Filter> jwtFilterServletRegistration(JwtAuthenticationFilter filter) {
+    FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>(filter);
+    registration.setEnabled(false);
+    return registration;
     }
 }

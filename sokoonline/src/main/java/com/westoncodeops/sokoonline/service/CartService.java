@@ -5,9 +5,9 @@ import com.westoncodeops.sokoonline.dto.responses.CartResponse;
 import java.util.UUID;
 
 public interface CartService {
-    CartResponse getCart(UUID userId);
-    CartResponse addItem(UUID userId, UUID productId, Integer quantity);
-    CartResponse updateItemQuantity(UUID userId, UUID productId, Integer quantity);
-    CartResponse removeItem(UUID userId, UUID productId);
-    CartResponse clearCart(UUID userId);
+    CartResponse getCart(UUID customerId);
+    CartResponse addItem(UUID customerId, UUID productId, Integer quantity);
+    CartResponse updateItemQuantity(UUID customerId, UUID productId, Integer quantity);
+    CartResponse removeItem(UUID customerId, UUID productId);
+    CartResponse clearCart(UUID customerId);
 }

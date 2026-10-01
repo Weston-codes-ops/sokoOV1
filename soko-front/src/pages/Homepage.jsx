@@ -1,35 +1,21 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Search, ArrowRight, Truck, Shield, Star, ShoppingBag } from 'lucide-react'
+import { Search, ArrowRight, Shield, ShoppingBag } from 'lucide-react'
 import api from '../api/axios'
 import Footer from '../components/Footer'
 import { useAuth } from '../context/AuthContext'
 import logo from '../assets/sokoonline-logo.svg'
-import PromoSection from '../components/PromoSlider'
 import TypingAnimation from '../components/TypingAnimation'
 
-const CLEAN_BG   = 'https://images.unsplash.com/photo-1563453392212-326f5e854473?w=1200&q=80'
-const FASHION_BG = 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80'
-const HERO_BG    = 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1600&q=80'
 const CTA_BG     = 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1600&q=80'
-
-const PERKS = [
-  { icon: Truck,       label: 'Free delivery',    sub: 'Orders over KSh 2,000' },
-  { icon: Shield,      label: 'Secure payments',  sub: 'M-Pesa & card'          },
-  { icon: Star,        label: '4.8★ rated',       sub: '2,000+ customers'       },
-  { icon: ShoppingBag, label: 'Wide selection',   sub: 'Thousands of products'  },
-]
-
-const BADGES = ['HOT DEAL', 'NEW', '20% OFF', 'POPULAR', 'LIMITED', 'FRESH']
 
 export default function Homepage() {
   const [search, setSearch]           = useState('')
-  const [categories, setCategories]   = useState([])
-  const [promoItems, setPromoItems]   = useState([])
-  const [specialized, setSpecialized] = useState({})
+  const [products, setProducts]       = useState([])
+  const [productsLoading, setProductsLoading] = useState(true)
   const navigate = useNavigate()
   const location = useLocation()
-  const { user, logout } = useAuth()
+  const { customer, logout } = useAuth()
   const message = location.state?.message
 
   const handleLogout = () => {
@@ -50,14 +36,8 @@ export default function Homepage() {
   useEffect(() => {
     api.get('/products?size=50').then(res => {
       const all = res.data.content ?? res.data ?? []
-      const grouped = {}
-      all.forEach(p => {
-        const categoryName = p.categories?.[0] || 'General'
-        if (!grouped[categoryName]) grouped[categoryName] = []
-        if (grouped[categoryName].length < 6) grouped[categoryName].push(p)
-      })
-      setSpecialized(grouped)
-    }).catch(() => {})
+      setProducts(all)
+    }).catch(() => setProducts([])).finally(() => setProductsLoading(false))
   }, [])
 
   const handleSearch = (e) => {
@@ -69,66 +49,68 @@ export default function Homepage() {
     <div className="min-h-screen flex flex-col bg-white">
 
       {message && (
-        <div className="fixed right-6 top-6 z-50 rounded-lg border border-green-100 bg-white px-4 py-3 text-sm font-medium text-[#0f4c35] shadow-lg">
+        <div className="fixed right-6 top-6 z-5 border border-green-100 bg-white px-4 py-3 text-sm font-medium text-brand-primary shadow-lg">
           {message}
         </div>
       )}
 
       {/* ══ MERGED NAVBAR + HERO ══════════════════════════════════════ */}
-      <div className="relative overflow-hidden bg-[#0f4c35] pb-24">
-        <div className="absolute inset-x-0 top-0 h-96 bg-[radial-gradient(circle_at_top_right,_rgba(245,158,11,0.4),transparent_35%)]" />
+      <div className="relative overflow-hidden bg-brand-primary pb-24">
+        <div className="home-hero-accent-glow absolute inset-x-0 top-0 h-96" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,_rgba(255,255,255,0.08),transparent_22%),radial-gradient(circle_at_80%_15%,_rgba(255,255,255,0.06),transparent_20%)]" />
 
         <div className="relative z-10 max-w-6xl mx-auto px-6 pt-10">
-          <div className="flex items-center gap-8">
-            <Link to="/" className="shrink-0 flex items-center gap-3">
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 md:gap-8">
+            <Link to="/" className="flex shrink-0 items-center gap-3 justify-self-start">
               <img src={logo} alt="SokoOnline" className="h-9 w-auto" />
             </Link>
 
-            <div className="hidden md:flex items-center justify-center gap-8 flex-1">
+            <div className="hidden items-center justify-center gap-8 md:flex">
               {[
                 { to: '/store', label: 'Store' },
                 { to: '/about', label: 'About' },
                 { to: '/faqs',  label: 'FAQs'  },
               ].map(({ to, label }) => (
                 <Link key={to} to={to}
-                  className="relative text-base font-semibold text-white/90 hover:text-white transition-all border-b-2 border-transparent hover:border-[#f59e0b] pb-1">
+                  className="relative text-base font-semibold text-white/90 hover:text-white transition-all border-b-2 border-transparent hover:border-brand-accent pb-1">
                   {label}
                 </Link>
               ))}
             </div>
 
-            <div className="flex items-center gap-3 ml-auto">
-              {user ? (
+            <div className="flex items-center justify-self-end gap-3">
+              {customer && (
                 <>
-                  <span className="text-sm text-white/90 hidden sm:inline">Hi, {user.name || user.email}</span>
+                  <span className="text-sm text-white/90 hidden sm:inline">Hi, {customer.name || customer.email}</span>
                   <button type="button" onClick={handleLogout}
                     className="text-sm font-semibold bg-white/10 hover:bg-white/20 text-white px-4 py-1.5 rounded-lg transition-colors">
                     Sign out
                   </button>
                 </>
-              ) : (
-                <>
-                  <Link to="/login"
-                    className="text-sm font-medium text-white/80 hover:text-white transition-colors px-3 py-1.5">
-                    Sign in
+              )}
+              {!customer && (
+                <div className="flex flex-col items-end gap-1">
+                  <Link to="/register" className="bg-brand-accent px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-brand-accent-hover">
+                    Sign up
                   </Link>
-                  <Link to="/register"
-                    className="text-sm font-semibold bg-[#f59e0b] hover:bg-[#d97706] text-white px-4 py-1.5 rounded-lg transition-colors">
-                    Get started
-                  </Link>
-                </>
+                  <div className="flex items-center gap-2 text-[11px] text-white/80 sm:text-xs">
+                    <Link to="/login" className="border border-white/40 px-2 py-1 font-bold text-white transition-colors hover:bg-white/10">
+                    <span>Already have an account? </span>
+                      login
+                    </Link>
+                  </div>
+                </div>
               )}
             </div>
           </div>
 
           <div className="mt-12 grid gap-10 lg:grid-cols-[1.2fr_0.8fr] items-start">
             <div>
-              <p className="text-[#f59e0b] text-xs font-semibold uppercase tracking-[0.28em] mb-4">
+              <p className="text-brand-accent text-xs font-semibold uppercase tracking-[0.28em] mb-4">
                 Nairobi's online marketplace
               </p>
               <h1 className="text-5xl sm:text-6xl font-extrabold text-white leading-tight mb-6 max-w-2xl min-h-[2.5em]">
-                <TypingAnimation text="Find fresh essentials, trending picks and everyday deals in one place." />
+                <TypingAnimation text="Find fresh essentials, trending picks and everyday deals in one place."/>
               </h1>
               <p className="text-white/75 text-base sm:text-lg max-w-xl leading-relaxed mb-8">
                 Shop groceries, fashion and home essentials with fast delivery, trusted sellers, and a polished online experience built for Nairobi.
@@ -141,11 +123,11 @@ export default function Homepage() {
                   <input
                     type="text" value={search} onChange={e => setSearch(e.target.value)}
                     placeholder="Search products, brands and deals"
-                    className="w-full pl-14 pr-4 py-4 rounded-3xl text-sm sm:text-base text-white placeholder-white/60 bg-white/10 border border-white/15 focus:outline-none focus:ring-2 focus:ring-[#f59e0b]/50"
+                    className="w-full pl-14 pr-4 py-4 rounded-3xl text-sm sm:text-base text-white placeholder-white/60 bg-white/10 border border-white/15 focus:outline-none focus:ring-2 focus:ring-brand-accent/50"
                   />
                 </div>
                 <button type="submit"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-[#f59e0b] hover:bg-[#d97706] text-white font-semibold rounded-3xl text-sm sm:text-base transition-colors">
+                  className="inline-flex items-center justify-center px-8 py-4 bg-brand-accent hover:bg-brand-accent-hover text-white font-semibold rounded-3xl text-sm sm:text-base transition-colors">
                   Search
                 </button>
               </form>
@@ -178,7 +160,7 @@ export default function Homepage() {
                     <p className="text-xs uppercase tracking-[0.28em] text-white/70">Visual highlights</p>
                     <h3 className="text-xl font-extrabold text-white">A framed collection of inspiration</h3>
                   </div>
-                  <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#f59e0b]">Fresh picks</span>
+                  <span className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent">Fresh picks</span>
                 </div>
                 <div className="grid gap-3">
                   <div className="grid grid-cols-2 gap-3">
@@ -205,11 +187,11 @@ export default function Homepage() {
                 </div>
               </div>
 
-              <div className="rounded-[2rem] bg-[#153d27]/70 p-6 text-white">
-                <p className="text-xs uppercase tracking-[0.25em] text-[#f59e0b] font-semibold mb-4">Why shop with us</p>
+              <div className="rounded-[2rem] bg-brand-primary-dark/70 p-6 text-white">
+                <p className="text-xs uppercase tracking-[0.25em] text-brand-accent font-semibold mb-4">Why shop with us</p>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <div className="mt-1 h-9 w-9 rounded-2xl bg-[#f59e0b]/20 flex items-center justify-center text-[#f59e0b]">
+                    <div className="mt-1 h-9 w-9 rounded-2xl bg-brand-accent/20 flex items-center justify-center text-brand-accent">
                       <ShoppingBag size={18} />
                     </div>
                     <div>
@@ -235,100 +217,67 @@ export default function Homepage() {
         </div>
       </div>
 
-      {/* ══ PROMO SECTION ═════════════════════════════════════════════ */}
-      {promoItems.length > 0 && (
-        <section className="py-10 bg-white">
-          <div className="max-w-5xl mx-auto px-6 mb-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-bold text-[#f59e0b] uppercase tracking-widest mb-1">
-                  🔥 Today's Deals
-                </p>
-                <h2 className="text-xl font-extrabold text-gray-900">Hot Offers</h2>
-              </div>
-              <Link to="/store"
-                className="text-xs font-semibold text-[#0f4c35] hover:text-[#1a6b4a] flex items-center gap-1">
-                View all <ArrowRight size={12} />
-              </Link>
+      <section className="bg-surface-subtle py-14 sm:py-16">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <div>
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-brand-accent">Made for your everyday</p>
+              <h2 className="text-2xl font-extrabold text-text-primary sm:text-3xl">Explore our products</h2>
             </div>
+            <Link to="/store" className="inline-flex shrink-0 items-center gap-2 text-sm font-bold text-brand-primary transition-colors hover:text-brand-primary-hover">
+              View all <ArrowRight size={16} />
+            </Link>
           </div>
-          <PromoSection items={promoItems} />
-        </section>
-      )}
 
-      {/* ══ SPECIALIZED SECTIONS ══════════════════════════════════════ */}
-      {Object.entries(specialized).slice(0, 3).map(([catName, products], i) => {
-        const bgs = [CLEAN_BG, FASHION_BG, HERO_BG]
-        const bg  = bgs[i % bgs.length]
-        return (
-          <section key={catName} className="relative py-14 overflow-hidden">
-            <div className="absolute inset-0 bg-cover bg-center bg-fixed"
-              style={{ backgroundImage: `url('${bg}')` }} />
-            <div className="absolute inset-0 bg-black/70" />
-            <div className="absolute inset-0 bg-[#0f4c35]/30" />
-            <div className="relative z-10 max-w-5xl mx-auto px-6">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <p className="text-[#f59e0b] text-xs font-bold uppercase tracking-widest mb-1">Featured</p>
-                  <h2 className="text-2xl font-extrabold text-white">{catName}</h2>
-                </div>
-                <Link to="/store"
-                  className="flex items-center gap-1.5 text-xs font-semibold text-white/70 hover:text-white border border-white/20 hover:border-white/40 px-3 py-1.5 rounded-lg transition-colors">
-                  Shop all <ArrowRight size={12} />
-                </Link>
-              </div>
-              <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
-                {products.map(p => (
-                  <Link key={p.id} to={`/products/${p.slug}`}
-                    className="group bg-white/10 backdrop-blur-sm hover:bg-white/20 border border-white/10 hover:border-white/30 rounded-xl overflow-hidden transition-all">
-                    <div className="aspect-square overflow-hidden bg-black/20">
-                      {p.imageURL
-                        ? <img src={p.imageURL} alt={p.name}
-                            className="w-full h-full object-contain p-2 transition-transform duration-300" />
-                        : <div className="w-full h-full flex items-center justify-center">
-                            <ShoppingBag size={18} className="text-white/30" />
-                          </div>
-                      }
-                    </div>
-                    <div className="p-2.5">
-                      <p className="text-xs font-semibold text-white line-clamp-2 leading-snug">{p.name}</p>
-                      <p className="text-xs font-extrabold text-[#f59e0b] mt-1">
-                        KSh {Number(p.price).toLocaleString()}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+          {productsLoading ? (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              {[...Array(4)].map((_, index) => <div key={index} className="aspect-[4/5] animate-pulse bg-surface" />)}
             </div>
-          </section>
-        )
-      })}
+          ) : products.length > 0 ? (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              {products.slice(0, 8).map(product => (
+                <Link key={product.id} to={`/store?search=${encodeURIComponent(product.name)}`} className="group overflow-hidden border border-border-brand-soft bg-surface transition-shadow hover:shadow-md">
+                  <div className="aspect-[4/3] overflow-hidden bg-surface-tint">
+                    {product.imageURL ? (
+                      <img src={product.imageURL} alt={product.name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-brand-primary"><ShoppingBag size={24} /></div>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h3 className="line-clamp-2 min-h-10 text-sm font-semibold text-text-primary">{product.name}</h3>
+                    <p className="mt-2 text-sm font-extrabold text-brand-primary">KSh {Number(product.price).toLocaleString()}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p className="rounded-xl border border-border-brand-soft bg-surface px-5 py-8 text-center text-sm text-text-muted">Products will appear here soon.</p>
+          )}
+        </div>
+      </section>
 
       {/* ══ BOLD CTA ══════════════════════════════════════════════════ */}
       <section className="relative py-28">
         <div className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url('${CTA_BG}')` }} />
         <div className="absolute inset-0 bg-black/65" />
-        <div className="absolute inset-0 bg-[#0f4c35]/35" />
+        <div className="absolute inset-0 bg-brand-primary/35" />
         <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
-          <p className="text-[#f59e0b] text-xs font-bold uppercase tracking-[0.25em] mb-4">
+          <p className="text-brand-accent text-xs font-bold uppercase tracking-[0.25em] mb-4">
             Join thousands of shoppers
           </p>
           <h2 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4 drop-shadow-lg">
             Everything you need,<br />
-            <span className="text-[#f59e0b]">delivered to your door.</span>
+            <span className="text-brand-accent">delivered to your door.</span>
           </h2>
           <p className="text-white/60 text-base mb-10 max-w-md mx-auto">
             Fresh produce, fashion and home essentials. Same-day delivery across Nairobi.
           </p>
           <div className="flex items-center justify-center gap-4 flex-wrap">
             <Link to="/store"
-              className="px-8 py-3.5 bg-[#f59e0b] hover:bg-[#d97706] text-white font-extrabold rounded-xl transition-colors text-sm shadow-xl flex items-center gap-2">
+              className="px-8 py-3.5 bg-brand-accent hover:bg-brand-accent-hover text-white font-extrabold rounded-xl transition-colors text-sm shadow-xl flex items-center gap-2">
               <ShoppingBag size={16} /> Shop Now
-            </Link>
-            <Link to="/register"
-              className="px-8 py-3.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-bold rounded-xl transition-colors text-sm border border-white/30 flex items-center gap-2">
-              Create Account <ArrowRight size={14} />
             </Link>
           </div>
         </div>

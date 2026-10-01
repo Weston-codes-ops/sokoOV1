@@ -2,7 +2,7 @@ package com.westoncodeops.sokoonline.controllers;
 
 import com.westoncodeops.sokoonline.dto.requests.CartItemRequest;
 import com.westoncodeops.sokoonline.dto.responses.CartResponse;
-import com.westoncodeops.sokoonline.security.CurrentUser;
+import com.westoncodeops.sokoonline.entities.Customer;
 import com.westoncodeops.sokoonline.service.CartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -25,12 +26,12 @@ public class CartController {
 
     @Operation(summary = "Get the authenticated user's cart")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Cart with items and totals"),
+            @ApiResponse(responseCode = "200", description = "Cart loaded"),
             @ApiResponse(responseCode = "401", description = "Requires authentication")
     })
     @GetMapping
-    public ResponseEntity<CartResponse> getCart() {
-        return ResponseEntity.ok(cartService.getCart(CurrentUser.idOrThrow()));
+    public ResponseEntity<CartResponse> getCart(@AuthenticationPrincipal Customer currentCustomer) {
+        return ResponseEntity.ok(cartService.getCart(currentCustomer.getId()));
     }
 
     @Operation(summary = "Add a product line-item to cart, or merge quantity if already present")
@@ -40,8 +41,8 @@ public class CartController {
             @ApiResponse(responseCode = "422", description = "Not enough stock / product inactive")
     })
     @PostMapping("/items")
-    public ResponseEntity<CartResponse> addItem(@Valid @RequestBody CartItemRequest request) {
-        UUID userId = CurrentUser.idOrThrow();
+    public ResponseEntity<CartResponse> addItem(@Valid @RequestBody CartItemRequest request, @AuthenticationPrincipal Customer currentCustomer) {
+        UUID userId = currentCustomer.getId();
         return ResponseEntity.ok(cartService.addItem(userId, request.productId(), request.quantity()));
     }
 
@@ -53,23 +54,24 @@ public class CartController {
     })
     @PutMapping("/items/{productId}")
     public ResponseEntity<CartResponse> updateItemQuantity(
+            @AuthenticationPrincipal Customer currentCustomer,
             @PathVariable UUID productId,
-            @RequestParam int quantity) {
-        UUID userId = CurrentUser.idOrThrow();
+            @RequestParam Integer quantity) {
+        UUID userId = currentCustomer.getId();
         return ResponseEntity.ok(cartService.updateItemQuantity(userId, productId, quantity));
     }
 
     @Operation(summary = "Remove a single line item by product ID")
     @DeleteMapping("/items/{productId}")
-    public ResponseEntity<CartResponse> removeItem(@PathVariable UUID productId) {
-        UUID userId = CurrentUser.idOrThrow();
+    public ResponseEntity<CartResponse> removeItem(@PathVariable UUID productId, @AuthenticationPrincipal Customer currentCustomer) {
+        UUID userId = currentCustomer.getId();
         return ResponseEntity.ok(cartService.removeItem(userId, productId));
     }
 
-    @Operation(summary = "Clear every line item from the cart")
+    @Operation(summary = "Clear every item from the cart")
     @DeleteMapping
-    public ResponseEntity<CartResponse> clearCart() {
-        UUID userId = CurrentUser.idOrThrow();
+    public ResponseEntity<CartResponse> clearCart(@AuthenticationPrincipal Customer currentCustomer) {
+        UUID userId = currentCustomer.getId();
         return ResponseEntity.ok(cartService.clearCart(userId));
     }
 }
