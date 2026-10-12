@@ -9,7 +9,7 @@ const api = axios.create({
 })
 
 let refreshRequest = null
-const isAuthRequest = url => /\/(login|register|refresh)(?:[/?]|$)/.test(url || '')
+const isAuthRequest = url => /\/(login|register|refresh|verify-email|resend-verification)(?:[/?]|$)/.test(url || '')
 
 /*
  * Request Interceptor

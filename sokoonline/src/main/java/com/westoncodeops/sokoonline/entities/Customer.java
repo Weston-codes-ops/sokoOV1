@@ -38,6 +38,13 @@ public class Customer implements UserDetails {
     @Column
     private String password;
 
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    @Builder.Default
+    private boolean emailVerified = true;
+
+    @Column
+    private LocalDateTime emailVerifiedAt;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp
@@ -59,6 +66,8 @@ public class Customer implements UserDetails {
     }
 
     @Override
-    public boolean isEnabled() { return true; }
+    public boolean isEnabled() {
+        return emailVerified;
+    }
 
 }

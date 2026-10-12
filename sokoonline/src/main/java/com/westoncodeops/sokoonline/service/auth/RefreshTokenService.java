@@ -69,7 +69,8 @@ public class RefreshTokenService {
                 throw invalidToken();
             }
             user = loadOwner(username, storedToken);
-            if (!jwtService.isTokenValid(token, user)
+            if (!user.isEnabled()
+                    || !jwtService.isTokenValid(token, user)
                     || !jwtService.extractExpiration(token).equals(storedToken.getExpiresAt())) {
                 throw invalidToken();
             }

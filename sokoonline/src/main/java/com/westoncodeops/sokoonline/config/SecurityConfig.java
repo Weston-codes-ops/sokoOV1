@@ -51,14 +51,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                            JwtAuthenticationFilter jwtAuthenticationFilter,
-                           CorsConfigurationSource corsConfigurationSource) throws Exception {
+                           CorsConfigurationSource corsConfigurationSource,
+                           OAuthLoginSuccessHandler oauthSuccessHandler,
+                           OAuthLoginFailureHandler oauthFailureHandler) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
         .cors(cors -> cors.configurationSource(corsConfigurationSource))
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers("/api/v1/customers/register", "/api/v1/customers/login",
-                "/api/v1/customers/refresh", "/api/v1/admin/auth/**",
+                "/api/v1/customers/refresh", "/api/v1/customers/verify-email",
+                "/api/v1/customers/resend-verification",
+                "/api/v1/admin/auth/**", "/api/v1/oauth2/**", "/api/v1/login/oauth2/**",
                 "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+            .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/v1/products/**", "/api/v1/categories/**").permitAll()
             .requestMatchers("/api/v1/admin/**").access((authentication, context) ->
                 new AuthorizationDecision(authentication.get().getPrincipal() instanceof Admin))
@@ -74,6 +79,11 @@ public class SecurityConfig {
                 (authentication, context) -> new AuthorizationDecision(
                     authentication.get().getPrincipal() instanceof Admin))
             .anyRequest().authenticated())
+        .oauth2Login(oauth -> oauth
+            .authorizationEndpoint(endpoint -> endpoint.baseUri("/api/v1/oauth2/authorization"))
+            .redirectionEndpoint(endpoint -> endpoint.baseUri("/api/v1/login/oauth2/code/*"))
+            .successHandler(oauthSuccessHandler)
+            .failureHandler(oauthFailureHandler))
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
     }

@@ -1,6 +1,11 @@
 import { oauthProviders } from '../data/oauthProviders'
+import api from '../api/axios'
 
-export default function OAuthOptions({ onSelect }) {
+export default function OAuthOptions() {
+  const beginOAuth = (provider) => {
+    window.location.assign(`${api.defaults.baseURL}/oauth2/authorization/${provider}`)
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-3" aria-hidden="true">
@@ -13,7 +18,7 @@ export default function OAuthOptions({ onSelect }) {
           <button
             key={provider.id}
             type="button"
-            onClick={() => onSelect?.(provider.id)}
+            onClick={() => beginOAuth(provider.id)}
             className="flex min-h-11 w-full items-center justify-center gap-3 rounded-lg border border-border-default bg-surface px-4 py-3 text-sm font-semibold text-text-primary transition-colors hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/20"
           >
             <span className="flex h-5 w-5 items-center justify-center rounded-full border border-border-default text-xs font-bold text-brand-primary">

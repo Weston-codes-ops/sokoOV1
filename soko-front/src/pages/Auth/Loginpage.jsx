@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react'
 import sokoImg from '../../../public/sokoonline-logo.svg'
 import api from '../../api/axios'
 import { useAuth } from '../../context/AuthContext'
+import OAuthOptions from '../../components/OAuthOptions'
 
 export default function Loginpage() {
 	const [error, setError] = useState('')
@@ -24,8 +25,12 @@ export default function Loginpage() {
 				email: formData.get('email'),
 				password: formData.get('password'),
 			})
-			login({ id: data.userId, email: data.email, name: data.fullName, role: 'USER' }, data.accessToken, data.refreshToken)
-			navigate('/store', { replace: true })
+			if (data.accessToken) {
+				login({ id: data.userId, email: data.email, name: data.fullName, role: 'USER' }, data.accessToken, data.refreshToken)
+				navigate('/store', { replace: true })
+			} else {
+				navigate('/verify-email', { replace: true, state: { email: data.email, notice: data.message } })
+			}
 		} catch (requestError) {
 			setError(requestError.response?.data?.message || 'Unable to sign in. Check the email and password.')
 		} finally {
@@ -49,6 +54,9 @@ export default function Loginpage() {
 							<p className="text-sm leading-6 text-text-muted">Sign in to continue to your account.</p>
 						</header>
 						{location.state?.notice && <p role="status" className="border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800">{location.state.notice}</p>}
+						{new URLSearchParams(location.search).get('oauthError') === 'email'
+							? <p role="alert" className="border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">We could not send your verification email. Check the local SMTP settings and try again.</p>
+							: new URLSearchParams(location.search).has('oauthError') && <p role="alert" className="border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">Sign-in with that provider could not be completed. Check that your email is verified and try again.</p>}
 						{error && <p role="alert" className="border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
 						<label htmlFor="login-email" className="flex flex-col gap-2 text-sm font-semibold text-text-primary">
 							Email
@@ -61,6 +69,7 @@ export default function Loginpage() {
 						<button type="submit" disabled={submitting} className="mt-1 min-h-11 rounded-lg bg-brand-primary px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-brand-primary-hover disabled:cursor-wait disabled:opacity-60">
 							{submitting ? 'Signing in...' : 'Sign in'}
 						</button>
+						<OAuthOptions />
 						<p className="text-center text-sm text-text-muted">
 							New to SokoOnline? <Link to="/register" className="font-bold text-brand-primary hover:text-brand-primary-hover">Create an account</Link>
 						</p>

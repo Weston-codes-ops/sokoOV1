@@ -57,6 +57,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 
+    @ExceptionHandler(EmailDeliveryException.class)
+    public ResponseEntity<Map<String, Object>> handleEmailDelivery(EmailDeliveryException ex) {
+        Map<String, Object> body = buildErrorBody(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(body);
+    }
+
     @ExceptionHandler(InsufficientStockException.class)
     public ResponseEntity<Map<String, Object>> handleInsufficientStock(InsufficientStockException ex) {
         Map<String, Object> body = buildErrorBody(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), null);

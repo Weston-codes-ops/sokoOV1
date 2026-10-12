@@ -32,6 +32,7 @@ import AdminProductsPage from './pages/admin/AdminProductsPage'
 import AdminLayout       from './components/AdminLayout'
 import Registerpage      from './pages/Auth/Registerpage'
 import Loginpage         from './pages/Auth/Loginpage'
+import VerifyEmailPage   from './pages/Auth/VerifyEmailPage'
 import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminRegisterPage from './pages/admin/AdminRegisterPage'
 import NotFound from './pages/util/Notfound'
@@ -118,6 +119,7 @@ function AppRoutes() {
         <Route path="/faqs"    element={<FAQpage />} />
         <Route path="/register" element={<Registerpage />} />
         <Route path="/login" element={<Loginpage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/_market-ops/login" element={<AdminRoute><AdminLoginPage /></AdminRoute>} />
         <Route path="/_market-ops/admins-pvp" element={<AdminRoute><AdminRegisterPage /></AdminRoute>} />
 
