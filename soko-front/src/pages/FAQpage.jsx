@@ -9,13 +9,14 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
 const FAQS = [
-  { q: 'How do I place an order?',          a: 'Browse the store, add items to your cart, then proceed to checkout. Fill in your delivery details and confirm your order.' },
-  { q: 'What areas do you deliver to?',     a: 'We currently deliver across Nairobi. We are working on expanding to other counties soon.' },
-  { q: 'How much does delivery cost?',      a: 'Delivery is free on orders over KSh 2,000. For smaller orders, a flat fee of KSh 200 applies.' },
-  { q: 'How do I pay?',                     a: 'We accept M-Pesa and major credit/debit cards. Payment is collected on delivery.' },
-  { q: 'Can I cancel or change my order?',  a: 'You can cancel or modify your order within 1 hour of placing it by contacting our support team.' },
-  { q: 'How do I track my order?',          a: 'Once your order is confirmed, you can track its status from the My Orders page in your account.' },
-  { q: 'Are products fresh and quality guaranteed?', a: 'Yes. We source directly from verified local suppliers and farmers. If you receive a substandard product, contact us for a replacement or refund.' },
+  { q: 'What is SokoOnline?',               a: 'SokoOnline is my online shop, with a growing collection of products chosen to share with you.' },
+  { q: 'How do I place an order?',          a: 'Browse the store, add items to your cart, then follow the steps shown to submit your order.' },
+  { q: 'What areas do you deliver to?',     a: 'Delivery availability depends on your location. I’ll confirm the available options when you place your order.' },
+  { q: 'How much does delivery cost?',      a: 'Any delivery charges will be shared with you before your order is finalized.' },
+  { q: 'How do I pay?',                     a: 'I’ll let you know which payment options are available when you place your order.' },
+  { q: 'Can I cancel or change my order?',  a: 'Please contact me as soon as possible. Changes may not be possible once your order is being prepared.' },
+  { q: 'How do I track my order?',          a: 'If order tracking is available for your purchase, I’ll share the relevant updates with you.' },
+  { q: 'How can I learn more about a product?', a: 'Check the product listing for its details. If you still have a question, please get in touch before ordering.' },
 ]
 
 export default function FAQPage() {

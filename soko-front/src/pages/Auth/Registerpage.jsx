@@ -1,16 +1,19 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import sokoImg from '../../../public/sokoonline-logo.svg'
 import api from '../../api/axios'
 import OAuthOptions from '../../components/OAuthOptions'
+import { useAuth } from '../../context/AuthContext'
 
 
 
 export default function Registerpage() {
     const [error, setError] = useState('')
     const [submitting, setSubmitting] = useState(false)
+    const location = useLocation()
     const navigate = useNavigate()
+    const { login } = useAuth()
 
     const submit = async (event) => {
         event.preventDefault()
@@ -28,7 +31,12 @@ export default function Registerpage() {
                 email: formData.get('email'),
                 password,
             })
-            navigate('/verify-email', { replace: true, state: { email: data.email } })
+            if (data.accessToken) {
+                login({ id: data.userId, email: data.email, name: data.fullName, role: 'USER' }, data.accessToken, data.refreshToken)
+                navigate(location.state?.returnTo || '/store', { replace: true })
+            } else {
+                navigate('/verify-email', { replace: true, state: { email: data.email } })
+            }
         } catch (requestError) {
             setError(requestError.response?.data?.message || 'Unable to create your account.')
         } finally {
@@ -50,7 +58,7 @@ return(
             <form onSubmit={submit} className="flex w-full max-w-sm flex-col gap-5">
                 <header className="space-y-2 mt-3">
                     <h1 className="text-2xl font-extrabold text-text-primary">Create your account</h1>
-                    <p className="text-sm leading-6 text-text-muted">Join SokoOnline and discover local favorites.</p>
+                    <p className="text-sm leading-6 text-text-muted">Create an account and explore the SokoOnline collection.</p>
                 </header>
                 {error && <p role="alert" className="border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
                 <label htmlFor="register-email" className="flex flex-col gap-2 text-sm font-semibold text-text-primary">
@@ -70,7 +78,7 @@ return(
                 </button>
                 <OAuthOptions />
                 <p className="text-center text-sm text-text-muted">
-                    Have an account? <Link to="/login" className="font-bold text-brand-primary hover:text-brand-primary-hover">Sign in</Link>
+                    Have an account? <Link to="/login" state={{ returnTo: location.state?.returnTo }} className="font-bold text-brand-primary hover:text-brand-primary-hover">Sign in</Link>
                 </p>
             </form>
         </div>

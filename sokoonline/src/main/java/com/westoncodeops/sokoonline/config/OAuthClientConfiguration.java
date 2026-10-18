@@ -21,9 +21,25 @@ public class OAuthClientConfiguration {
             @Value("${app.oauth.google.client-secret:}") String googleClientSecret,
             @Value("${app.oauth.yahoo.client-id:}") String yahooClientId,
             @Value("${app.oauth.yahoo.client-secret:}") String yahooClientSecret,
-            @Value("${app.oauth.redirect-uri}") String redirectUri) {
+            @Value("${app.oauth.redirect-uri}") String redirectUri,
+            @Value("${app.oauth.enabled:false}") boolean oauthEnabled) {
         Map<String, ClientRegistration> registrations = new HashMap<>();
-        if (!googleClientId.isBlank() && !googleClientSecret.isBlank()) {
+        boolean googleIdConfigured = !googleClientId.isBlank();
+        boolean googleSecretConfigured = !googleClientSecret.isBlank();
+        boolean yahooIdConfigured = !yahooClientId.isBlank();
+        boolean yahooSecretConfigured = !yahooClientSecret.isBlank();
+
+        if (oauthEnabled && (googleIdConfigured != googleSecretConfigured
+                || yahooIdConfigured != yahooSecretConfigured)) {
+            throw new IllegalStateException(
+                    "OAuth is enabled, but a provider has only one of its client ID and client secret configured.");
+        }
+        if (oauthEnabled && !googleIdConfigured && !yahooIdConfigured) {
+            throw new IllegalStateException(
+                    "OAuth is enabled, but no provider client credentials are configured.");
+        }
+
+        if (oauthEnabled && googleIdConfigured) {
             registrations.put("google", CommonOAuth2Provider.GOOGLE.getBuilder("google")
                     .clientId(googleClientId)
                     .clientSecret(googleClientSecret)
@@ -31,7 +47,7 @@ public class OAuthClientConfiguration {
                     .scope("openid", "profile", "email")
                     .build());
         }
-        if (!yahooClientId.isBlank() && !yahooClientSecret.isBlank()) {
+        if (oauthEnabled && yahooIdConfigured) {
             registrations.put("yahoo", ClientRegistration.withRegistrationId("yahoo")
                     .clientId(yahooClientId)
                     .clientSecret(yahooClientSecret)

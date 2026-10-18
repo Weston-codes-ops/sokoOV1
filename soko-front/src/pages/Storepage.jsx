@@ -220,7 +220,7 @@ export default function ProductsPage() {
                 <div className="flex items-center gap-3">
                   <h1 className="text-md font-black tracking-tight text-slate-950">Store</h1>
                 </div>
-                <p className="text-sm text-slate-500 max-w-2xl">Explore our latest products, made for you</p>
+                <p className="text-sm text-slate-500 max-w-2xl">Browse the SokoOnline collection and find your next favorite.</p>
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">

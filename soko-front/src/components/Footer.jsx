@@ -35,7 +35,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-white/50 text-xs leading-relaxed mb-4 max-w-xs">
-              Nairobi's trusted online marketplace for fresh produce, fashion and home essentials.
+              SokoOnline is my online shop: a growing collection of products chosen with care.
             </p>
             {/* Social icons */}
             <div className="flex gap-2">

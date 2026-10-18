@@ -24,6 +24,34 @@ jobs:
 
   backend:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: sokoonline_test
+          POSTGRES_USER: sokoonline_test
+          POSTGRES_PASSWORD: ${{ github.run_id }}-${{ github.run_attempt }}-ci-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U sokoonline_test -d sokoonline_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/sokoonline_test
+      SPRING_DATASOURCE_USERNAME: sokoonline_test
+      SPRING_DATASOURCE_PASSWORD: ${{ github.run_id }}-${{ github.run_attempt }}-ci-only
+      JWT_ISSUER: sokoonline-ci
+      JWT_AUDIENCE: sokoonline-ci
+      APP_CORS_ALLOWED_ORIGINS: https://ci.invalid
+      EMAIL_VERIFICATION_ENABLED: "false"
+      OAUTH_ENABLED: "false"
+      DARAJA_ENABLED: "false"
+      CLOUDINARY_CLOUD_NAME: ci-placeholder
+      CLOUDINARY_API_KEY: ci-placeholder
+      CLOUDINARY_API_SECRET: ci-placeholder
     defaults:
       run:
         working-directory: sokoonline
@@ -34,4 +62,8 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: maven
-      - run: ./mvnw -B -DskipTests compile
+      - name: Create ephemeral test-only secrets
+        run: |
+          echo "JWT_SECRET=$(openssl rand -base64 48 | tr -d '\n')" >> "$GITHUB_ENV"
+          echo "APP_SECURITY_ADMIN_KEY_SETUP=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+      - run: ./mvnw -B test

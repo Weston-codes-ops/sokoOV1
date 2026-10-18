@@ -2,6 +2,8 @@ import { oauthProviders } from '../data/oauthProviders'
 import api from '../api/axios'
 
 export default function OAuthOptions() {
+  if (import.meta.env.VITE_OAUTH_ENABLED !== 'true') return null
+
   const beginOAuth = (provider) => {
     window.location.assign(`${api.defaults.baseURL}/oauth2/authorization/${provider}`)
   }

@@ -27,7 +27,7 @@ export default function Loginpage() {
 			})
 			if (data.accessToken) {
 				login({ id: data.userId, email: data.email, name: data.fullName, role: 'USER' }, data.accessToken, data.refreshToken)
-				navigate('/store', { replace: true })
+				navigate(location.state?.returnTo || '/store', { replace: true })
 			} else {
 				navigate('/verify-email', { replace: true, state: { email: data.email, notice: data.message } })
 			}
@@ -71,7 +71,7 @@ export default function Loginpage() {
 						</button>
 						<OAuthOptions />
 						<p className="text-center text-sm text-text-muted">
-							New to SokoOnline? <Link to="/register" className="font-bold text-brand-primary hover:text-brand-primary-hover">Create an account</Link>
+							New to SokoOnline? <Link to="/register" state={{ returnTo: location.state?.returnTo }} className="font-bold text-brand-primary hover:text-brand-primary-hover">Create an account</Link>
 						</p>
 					</form>
 				</div>

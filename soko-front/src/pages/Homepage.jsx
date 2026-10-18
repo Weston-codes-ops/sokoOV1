@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Search, ArrowRight, Shield, ShoppingBag } from 'lucide-react'
+import { Search, ArrowRight, ShoppingBag } from 'lucide-react'
 import api from '../api/axios'
 import Footer from '../components/Footer'
 import { useAuth } from '../context/AuthContext'
@@ -55,12 +55,12 @@ export default function Homepage() {
       )}
 
       {/* ══ MERGED NAVBAR + HERO ══════════════════════════════════════ */}
-      <div className="relative overflow-hidden bg-brand-primary pb-24">
+      <div className="relative overflow-hidden bg-brand-primary pb-40">
         <div className="home-hero-accent-glow absolute inset-x-0 top-0 h-96" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,_rgba(255,255,255,0.08),transparent_22%),radial-gradient(circle_at_80%_15%,_rgba(255,255,255,0.06),transparent_20%)]" />
 
         <div className="relative z-10 max-w-6xl mx-auto px-6 pt-10">
-          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 md:gap-8">
+          <div className="grid min-h-[66px] grid-cols-[1fr_auto_1fr] items-center gap-4 md:gap-8">
             <Link to="/" className="flex shrink-0 items-center gap-3 justify-self-start">
               <img src={logo} alt="SokoOnline" className="h-9 w-auto" />
             </Link>
@@ -106,14 +106,11 @@ export default function Homepage() {
 
           <div className="mt-12 grid gap-10 lg:grid-cols-[1.2fr_0.8fr] items-start">
             <div>
-              <p className="text-brand-accent text-xs font-semibold uppercase tracking-[0.28em] mb-4">
-                Nairobi's online marketplace
-              </p>
-              <h1 className="text-5xl sm:text-6xl font-extrabold text-white leading-tight mb-6 max-w-2xl min-h-[2.5em]">
-                <TypingAnimation text="Find fresh essentials, trending picks and everyday deals in one place."/>
+              <h1 className="text-5xl sm:text-6xl font-extrabold text-white leading-tight max-w-2xl min-h-[1.5em]">
+                <TypingAnimation text="A Shop for you."/>
               </h1>
               <p className="text-white/75 text-base sm:text-lg max-w-xl leading-relaxed mb-8">
-                Shop groceries, fashion and home essentials with fast delivery, trusted sellers, and a polished online experience built for Nairobi.
+                Welcome to SokoOnline, my online store. Explore the collection, find something you love, and shop at your own pace.
               </p>
 
               <form onSubmit={handleSearch}
@@ -123,11 +120,11 @@ export default function Homepage() {
                   <input
                     type="text" value={search} onChange={e => setSearch(e.target.value)}
                     placeholder="Search products, brands and deals"
-                    className="w-full pl-14 pr-4 py-4 rounded-3xl text-sm sm:text-base text-white placeholder-white/60 bg-white/10 border border-white/15 focus:outline-none focus:ring-2 focus:ring-brand-accent/50"
+                    className="w-full pl-14 pr-4 py-4 text-sm sm:text-base text-white placeholder-white/60 bg-white/10 border border-white/15 focus:outline-none focus:ring-2 focus:ring-brand-accent/50"
                   />
                 </div>
                 <button type="submit"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-brand-accent hover:bg-brand-accent-hover text-white font-semibold rounded-3xl text-sm sm:text-base transition-colors">
+                  className="inline-flex items-center justify-center px-8 py-4 bg-brand-accent hover:bg-brand-accent-hover text-white font-semibold text-sm sm:text-base transition-colors">
                   Search
                 </button>
               </form>
@@ -152,65 +149,6 @@ export default function Homepage() {
               </div>
 
             </div>
-
-            <div className="space-y-6">
-              <div className="rounded-[2rem] border border-white/10 bg-white/10 backdrop-blur-xl p-5 shadow-2xl shadow-black/20 overflow-hidden">
-                <div className="flex items-center justify-between mb-5">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.28em] text-white/70">Visual highlights</p>
-                    <h3 className="text-xl font-extrabold text-white">A framed collection of inspiration</h3>
-                  </div>
-                  <span className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent">Fresh picks</span>
-                </div>
-                <div className="grid gap-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-[1.75rem] overflow-hidden border border-white/10 bg-white/10 h-40">
-                      <img src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=900&q=80" alt="Fresh produce" className="w-full h-full object-cover" />
-                    </div>
-                    <div className="grid gap-3">
-                      <div className="rounded-[1.75rem] overflow-hidden border border-white/10 bg-white/10 h-20">
-                        <img src="https://images.unsplash.com/photo-1521334884684-d80222895322?w=900&q=80" alt="Fashion essentials" className="w-full h-full object-cover" />
-                      </div>
-                      <div className="rounded-[1.75rem] overflow-hidden border border-white/10 bg-white/10 h-20">
-                        <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=900&q=80" alt="Home essentials" className="w-full h-full object-cover" />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="rounded-[1.75rem] overflow-hidden border border-white/10 bg-white/10 h-44 relative">
-                    <img src="https://images.unsplash.com/photo-1506806732259-39c2d0268443?auto=format&fit=crop&w=900&q=80" alt="Shopping highlights" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                    <div className="absolute bottom-4 left-4 text-white">
-                      <p className="text-xs uppercase tracking-[0.25em] text-white/70 mb-1">In every aisle</p>
-                      <p className="text-sm font-semibold">Trending picks, fresh finds, and best-selling bundles.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-[2rem] bg-brand-primary-dark/70 p-6 text-white">
-                <p className="text-xs uppercase tracking-[0.25em] text-brand-accent font-semibold mb-4">Why shop with us</p>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="mt-1 h-9 w-9 rounded-2xl bg-brand-accent/20 flex items-center justify-center text-brand-accent">
-                      <ShoppingBag size={18} />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold">Quick checkout</p>
-                      <p className="text-xs text-white/70">Payment with M-Pesa and card.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="mt-1 h-9 w-9 rounded-2xl bg-white/10 flex items-center justify-center text-white">
-                      <Shield size={18} />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold">Secure experience</p>
-                      <p className="text-xs text-white/70">Trusted shopping from verified sellers.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
 
          
@@ -221,8 +159,8 @@ export default function Homepage() {
         <div className="mx-auto max-w-6xl px-6">
           <div className="mb-8 flex items-end justify-between gap-4">
             <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-brand-accent">Made for your everyday</p>
-              <h2 className="text-2xl font-extrabold text-text-primary sm:text-3xl">Explore our products</h2>
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-brand-accent">Picked for the shop</p>
+              <h2 className="text-2xl font-extrabold text-text-primary sm:text-3xl">Explore the collection</h2>
             </div>
             <Link to="/store" className="inline-flex shrink-0 items-center gap-2 text-sm font-bold text-brand-primary transition-colors hover:text-brand-primary-hover">
               View all <ArrowRight size={16} />
@@ -236,7 +174,7 @@ export default function Homepage() {
           ) : products.length > 0 ? (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
               {products.slice(0, 8).map(product => (
-                <Link key={product.id} to={`/store?search=${encodeURIComponent(product.name)}`} className="group overflow-hidden border border-border-brand-soft bg-surface transition-shadow hover:shadow-md">
+                <Link key={product.id} to={`/products/${product.slug}`} className="group overflow-hidden border border-border-brand-soft bg-surface transition-shadow hover:shadow-md">
                   <div className="aspect-[4/3] overflow-hidden bg-surface-tint">
                     {product.imageURL ? (
                       <img src={product.imageURL} alt={product.name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
@@ -265,14 +203,14 @@ export default function Homepage() {
         <div className="absolute inset-0 bg-brand-primary/35" />
         <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
           <p className="text-brand-accent text-xs font-bold uppercase tracking-[0.25em] mb-4">
-            Join thousands of shoppers
+            From my shop to your shortlist
           </p>
           <h2 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4 drop-shadow-lg">
-            Everything you need,<br />
-            <span className="text-brand-accent">delivered to your door.</span>
+            Find your next favorite,<br />
+            <span className="text-brand-accent">right here at SokoOnline.</span>
           </h2>
           <p className="text-white/60 text-base mb-10 max-w-md mx-auto">
-            Fresh produce, fashion and home essentials. Same-day delivery across Nairobi.
+            Take a look around my online shop and see what catches your eye.
           </p>
           <div className="flex items-center justify-center gap-4 flex-wrap">
             <Link to="/store"

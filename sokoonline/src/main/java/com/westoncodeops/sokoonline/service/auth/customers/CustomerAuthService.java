@@ -18,9 +18,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Locale;
 
 @Service
@@ -34,6 +36,9 @@ public class CustomerAuthService implements UserDetailsService {
    private final EmailVerificationService emailVerificationService;
    private final OAuthIdentityRepository oauthIdentityRepository;
 
+   @Value("${app.auth.email-verification-enabled:true}")
+   private boolean emailVerificationEnabled;
+
    @Transactional
    public AuthResponse registerUser(RegisterRequest request){
    String email = normalizeEmail(request.email());
@@ -45,17 +50,23 @@ public class CustomerAuthService implements UserDetailsService {
            .name(email.substring(0, email.indexOf('@')))
            .email(email)
            .password(passwordEncoder.encode(request.password()))
-           .emailVerified(false)
+           .emailVerified(!emailVerificationEnabled)
+           .emailVerifiedAt(emailVerificationEnabled ? null : LocalDateTime.now())
            .build();
 
 
    Customer savedCustomer = customerRepository.save(customer);
+   if (!emailVerificationEnabled) {
+      return createSession(savedCustomer, "Account created successfully.");
+   }
+
    emailVerificationService.sendInitialCode(savedCustomer);
    return toResponse(savedCustomer,"Verification code sent. Verify your email before signing in.",null,null);
 
    }
 
 
+   @Transactional
    public AuthResponse login(LoginRequest request){
          Customer customer = customerRepository.findByEmailIgnoreCase(normalizeEmail(request.email()))
                  .orElseThrow(() -> new InvalidCredentialsException("Email or password is incorrect"));
@@ -64,6 +75,15 @@ public class CustomerAuthService implements UserDetailsService {
                  || !passwordEncoder.matches(request.password(), customer.getPassword())){
             throw new InvalidCredentialsException("Email or password is incorrect");
          }
+
+      if (!emailVerificationEnabled) {
+         if (!customer.isEmailVerified()) {
+            customer.setEmailVerified(true);
+            customer.setEmailVerifiedAt(LocalDateTime.now());
+            customerRepository.save(customer);
+         }
+         return createSession(customer, "Signed in successfully.");
+      }
 
       if (!customer.isEmailVerified()) {
          boolean sent = emailVerificationService.sendOrResendCode(customer);
@@ -94,9 +114,7 @@ public class CustomerAuthService implements UserDetailsService {
          return toResponse(customer, "Email verified. You can now sign in.", null, null);
       }
 
-      String accessToken = jwtService.generateAccessToken(customer, AccountType.USER);
-      String refreshToken = refreshTokenService.issue(customer, customer.getId(), AccountType.USER);
-      return toResponse(customer, "Email verified. You are now signed in.", accessToken, refreshToken);
+      return createSession(customer, "Email verified. You are now signed in.");
    }
 
    public void resendVerification(String email) {
@@ -122,6 +140,12 @@ public class CustomerAuthService implements UserDetailsService {
               accessToken,
               refreshToken
       );
+   }
+
+   private AuthResponse createSession(Customer customer, String message) {
+      String accessToken = jwtService.generateAccessToken(customer, AccountType.USER);
+      String refreshToken = refreshTokenService.issue(customer, customer.getId(), AccountType.USER);
+      return toResponse(customer, message, accessToken, refreshToken);
    }
 
 }

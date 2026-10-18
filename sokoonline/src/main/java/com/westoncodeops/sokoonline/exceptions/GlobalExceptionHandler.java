@@ -75,6 +75,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(body);
     }
 
+    @ExceptionHandler(PaymentConfigurationException.class)
+    public ResponseEntity<Map<String, Object>> handlePaymentConfiguration(PaymentConfigurationException ex) {
+        Map<String, Object> body = buildErrorBody(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(body);
+    }
+
+    @ExceptionHandler(PaymentGatewayException.class)
+    public ResponseEntity<Map<String, Object>> handlePaymentGateway(PaymentGatewayException ex) {
+        Map<String, Object> body = buildErrorBody(HttpStatus.BAD_GATEWAY, ex.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(body);
+    }
+
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Map<String, Object>> handleAuthentication(AuthenticationException ex) {
         Map<String, Object> body = buildErrorBody(HttpStatus.UNAUTHORIZED, "Authentication required", null);

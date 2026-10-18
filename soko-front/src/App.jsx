@@ -25,7 +25,9 @@ import { getAdminRedirectUrl, isAdminSubdomain } from './utils/adminDomain'
 // ── Page imports ──────────────────────────────────────────────────
 import Homepage          from './pages/Homepage'
 import Storepage      from './pages/Storepage'
+import ProductDetailPage from './pages/ProductDetailPage'
 import Cartpage          from './pages/Cartpage'
+import CheckoutPage      from './pages/CheckoutPage'
 import Aboutpage         from './pages/Aboutpage'
 import FAQpage           from './pages/FAQpage'
 import AdminProductsPage from './pages/admin/AdminProductsPage'
@@ -115,6 +117,7 @@ function AppRoutes() {
         {/* ── Public routes — anyone can access ─────────────────── */}
         <Route path="/"        element={<Homepage />} />
         <Route path="/store"   element={<Storepage />} />
+        <Route path="/products/:slug" element={<ProductDetailPage />} />
         <Route path="/about"   element={<Aboutpage />} />
         <Route path="/faqs"    element={<FAQpage />} />
         <Route path="/register" element={<Registerpage />} />
@@ -126,6 +129,9 @@ function AppRoutes() {
         {/* ── Protected routes — must be logged in ──────────────── */}
         <Route path="/cart" element={
           <ProtectedRoute customerOnly><Cartpage /></ProtectedRoute>
+        } />
+        <Route path="/checkout" element={
+          <ProtectedRoute customerOnly><CheckoutPage /></ProtectedRoute>
         } />
     
         <Route path="/_market-ops/catalog" element={

@@ -64,10 +64,14 @@ public class SecurityConfig {
                 "/api/v1/admin/auth/**", "/api/v1/oauth2/**", "/api/v1/login/oauth2/**",
                 "/swagger-ui/**", "/v3/api-docs/**").permitAll()
             .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/v1/products/**", "/api/v1/categories/**").permitAll()
+            .requestMatchers("/api/v1/payments/daraja/callback/**").permitAll()
             .requestMatchers("/api/v1/admin/**").access((authentication, context) ->
                 new AuthorizationDecision(authentication.get().getPrincipal() instanceof Admin))
             .requestMatchers("/api/v1/cart/**").access((authentication, context) ->
+                new AuthorizationDecision(authentication.get().getPrincipal() instanceof Customer))
+            .requestMatchers("/api/v1/checkout/**").access((authentication, context) ->
                 new AuthorizationDecision(authentication.get().getPrincipal() instanceof Customer))
             .requestMatchers(HttpMethod.POST, "/api/v1/products/**", "/api/v1/categories/**").access(
                 (authentication, context) -> new AuthorizationDecision(

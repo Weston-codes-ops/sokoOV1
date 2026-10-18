@@ -1,26 +1,20 @@
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { Link } from 'react-router-dom'
-import { Truck, Leaf, UserRound, ShieldCheck, ArrowRight } from 'lucide-react'
+import { ShoppingBag, Search, Heart, UserRound, ArrowRight } from 'lucide-react'
 
 const VALUES = [
-  { icon: Leaf,        title: 'Locally sourced',  desc: 'We work directly with Kenyan farmers and suppliers to bring you the freshest products.' },
-  { icon: Truck,       title: 'Fast delivery',     desc: 'Same-day and next-day delivery across Nairobi. Orders over KSh 2,000 ship free.' },
-  { icon: ShieldCheck, title: 'Secure & reliable', desc: 'Safe payments via M-Pesa and card. Every order is tracked and guaranteed.' },
-  { icon: UserRound,   title: 'Community first',   desc: 'We support local businesses and create opportunities for Nairobi entrepreneurs.' },
+  { icon: ShoppingBag, title: 'My own little shop', desc: 'SokoOnline is an independent online store, built around the products I choose to share.' },
+  { icon: Heart,       title: 'Picked with care',   desc: 'I bring together products that feel worth adding to the collection.' },
+  { icon: Search,      title: 'Easy to explore',    desc: 'Browse the collection and find the details you need on each product.' },
+  { icon: UserRound,   title: 'Growing over time',  desc: 'The shop will keep evolving as I add more products and discover new favorites.' },
 ]
 
-const STATS = [
-  { value: '10,000+', label: 'Happy customers' },
-  { value: '500+',    label: 'Products listed' },
-  { value: '3',       label: 'Counties served' },
-  { value: '4.8★',    label: 'Average rating' },
-]
-
-const TEAM = [
-  { name: 'Amara Osei',    role: 'Founder & CEO',       initial: 'A' },
-  { name: 'Kevin Mwangi',  role: 'Head of Logistics',   initial: 'K' },
-  { name: 'Fatuma Juma',   role: 'Supplier Relations',  initial: 'F' },
+const HIGHLIGHTS = [
+  { value: 'Personal', label: 'A shop shaped by my own taste' },
+  { value: 'Thoughtful', label: 'A collection chosen with care' },
+  { value: 'Simple', label: 'A straightforward way to browse' },
+  { value: 'Growing', label: 'More finds added over time' },
 ]
 
 export default function AboutPage() {
@@ -34,12 +28,11 @@ export default function AboutPage() {
           <div>
             <p className="text-brand-accent text-xs font-bold uppercase tracking-widest mb-4">Our Story</p>
             <h1 className="text-4xl font-extrabold text-white leading-tight mb-4">
-              Nairobi's most trusted online marketplace
+              My online shop
             </h1>
             <p className="text-white/60 text-sm leading-relaxed mb-6">
-              SokoOnline was born from a simple idea — make it easy for Nairobi residents
-              to access quality local products without the hassle of traffic and crowded markets.
-              We connect you directly with verified local suppliers.
+              SokoOnline is my online store: a place to bring together products I enjoy
+              and make them easy for you to discover. I’m building the collection one find at a time.
             </p>
             <Link to="/store"
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-accent hover:bg-brand-accent-hover text-white font-semibold rounded-lg transition-colors text-sm">
@@ -49,9 +42,9 @@ export default function AboutPage() {
 
           {/* Stats grid */}
           <div className="grid grid-cols-2 gap-3">
-            {STATS.map(s => (
+            {HIGHLIGHTS.map(s => (
               <div key={s.label} className="bg-white/10 rounded-xl px-5 py-5 border border-white/10">
-                <p className="text-2xl font-extrabold text-brand-accent">{s.value}</p>
+                <p className="text-xl font-extrabold text-brand-accent">{s.value}</p>
                 <p className="text-white/60 text-xs mt-1">{s.label}</p>
               </div>
             ))}
@@ -64,12 +57,11 @@ export default function AboutPage() {
         <div className="max-w-5xl mx-auto px-6 text-center">
           <p className="text-brand-accent text-xs font-bold uppercase tracking-widest mb-3">Our Mission</p>
           <h2 className="text-2xl font-extrabold text-gray-900 mb-4">
-            Bringing the market to your doorstep
+            A personal collection, ready to explore
           </h2>
           <p className="text-gray-500 text-sm leading-relaxed max-w-xl mx-auto">
-            We believe everyone deserves access to fresh, affordable, quality products —
-            delivered fast and reliably. SokoOnline is building the infrastructure that
-            makes local commerce work better for everyone.
+            I’m creating a shop that feels personal, easy to browse, and full of products
+            I’m happy to share. Have a look around and see what you find.
           </p>
         </div>
       </section>
@@ -77,8 +69,8 @@ export default function AboutPage() {
       {/* ── VALUES ───────────────────────────────────────────────── */}
       <section className="py-14 bg-surface-subtle">
         <div className="max-w-5xl mx-auto px-6">
-          <p className="text-brand-accent text-xs font-bold uppercase tracking-widest mb-2 text-center">What we stand for</p>
-          <h2 className="text-xl font-extrabold text-gray-900 mb-8 text-center">Our values</h2>
+          <p className="text-brand-accent text-xs font-bold uppercase tracking-widest mb-2 text-center">The way I shop</p>
+          <h2 className="text-xl font-extrabold text-gray-900 mb-8 text-center">What makes SokoOnline mine</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {VALUES.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="bg-white rounded-xl p-5 border border-gray-100">
@@ -93,21 +85,16 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ── TEAM ─────────────────────────────────────────────────── */}
+      {/* ── PERSONAL TOUCH ──────────────────────────────────────── */}
       <section className="py-14">
         <div className="max-w-5xl mx-auto px-6">
-          <p className="text-brand-accent text-xs font-bold uppercase tracking-widest mb-2 text-center">The people behind it</p>
-          <h2 className="text-xl font-extrabold text-gray-900 mb-8 text-center">Our team</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
-            {TEAM.map(member => (
-              <div key={member.name} className="text-center p-6 bg-surface-subtle rounded-xl border border-gray-100">
-                <div className="w-14 h-14 bg-brand-primary rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="text-white text-lg font-extrabold">{member.initial}</span>
-                </div>
-                <p className="text-sm font-bold text-gray-900">{member.name}</p>
-                <p className="text-xs text-gray-400 mt-0.5">{member.role}</p>
-              </div>
-            ))}
+          <p className="text-brand-accent text-xs font-bold uppercase tracking-widest mb-2 text-center">A shop in progress</p>
+          <h2 className="text-xl font-extrabold text-gray-900 mb-4 text-center">One find at a time</h2>
+          <div className="max-w-2xl mx-auto text-center p-6 bg-surface-subtle rounded-xl border border-gray-100">
+            <p className="text-sm text-gray-500 leading-relaxed">
+              I’m growing SokoOnline at my own pace, adding products as the collection takes shape.
+              Thanks for stopping by and being part of the beginning.
+            </p>
           </div>
         </div>
       </section>
@@ -115,8 +102,8 @@ export default function AboutPage() {
       {/* ── CTA ──────────────────────────────────────────────────── */}
       <section className="py-14 bg-brand-primary">
         <div className="max-w-5xl mx-auto px-6 text-center">
-          <h2 className="text-2xl font-extrabold text-white mb-3">Ready to start shopping?</h2>
-          <p className="text-white/60 text-sm mb-6">Join thousands of Nairobi residents already shopping with us.</p>
+          <h2 className="text-2xl font-extrabold text-white mb-3">Ready to explore my shop?</h2>
+          <p className="text-white/60 text-sm mb-6">Take a look through the SokoOnline collection.</p>
           <div className="flex items-center justify-center gap-3">
             <Link to="/store"
               className="px-5 py-2.5 bg-brand-accent hover:bg-brand-accent-hover text-white font-semibold rounded-lg transition-colors text-sm">

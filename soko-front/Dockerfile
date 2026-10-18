@@ -4,7 +4,9 @@ COPY package*.json ./
 RUN npm ci
 COPY . .
 ARG VITE_API_URL=http://localhost:8080/api/v1
+ARG VITE_OAUTH_ENABLED=false
 ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_OAUTH_ENABLED=$VITE_OAUTH_ENABLED
 RUN npm run build
 
 FROM nginx:1.27-alpine

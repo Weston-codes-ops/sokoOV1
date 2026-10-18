@@ -21,7 +21,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Trash2, ShoppingBag, Minus, Plus, ArrowRight } from 'lucide-react'
 import api from '../api/axios'
 import Navbar from '../components/Navbar'
-import Footer from '../components/Footer'
 
 export default function CartPage() {
   const [cart, setCart]       = useState(null)
@@ -163,15 +162,13 @@ export default function CartPage() {
                     </div>
                     <div className="flex justify-between text-xs text-gray-500">
                       <span>Delivery</span>
-                      <span className="text-brand-primary font-medium">
-                        {total >= 2000 ? 'Free' : 'KSh 200'}
-                      </span>
+                      <span className="text-gray-600 font-medium">To be confirmed</span>
                     </div>
                   </div>
 
                   <div className="flex justify-between text-sm font-extrabold text-gray-900 mb-5">
-                    <span>Total</span>
-                    <span>KSh {Number(total < 2000 ? total + 200 : total).toLocaleString()}</span>
+                    <span>Items subtotal</span>
+                    <span>KSh {Number(total).toLocaleString()}</span>
                   </div>
 
                   <button
@@ -181,7 +178,7 @@ export default function CartPage() {
                   </button>
 
                   <Link to="/store"
-                    className="block text-center text-xs text-gray-400 hover:text-brand-primary mt-3 transition-colors">
+                    className="block text-center text-xs underline text-gray-400 hover:text-brand-primary mt-3 hover:underline transition-colors">
                     Continue shopping
                   </Link>
                 </div>

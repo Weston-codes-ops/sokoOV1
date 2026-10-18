@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.Modifying;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -14,6 +15,13 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     Boolean existsBySlug(String slug);
     Optional<Product> findBySlug(String slug);
     Page<Product> findByIsActiveTrue(Pageable pageable);
+
+    @Modifying
+    @Query("""
+UPDATE Product p SET p.stockQuantity = p.stockQuantity - :quantity
+WHERE p.id = :id AND p.isActive = true AND p.stockQuantity >= :quantity
+""")
+    int decrementStockIfAvailable(@Param("id") UUID id, @Param("quantity") int quantity);
 
     @Query("""
 SELECT p FROM Product p
